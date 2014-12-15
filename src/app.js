@@ -50,7 +50,9 @@
       this.buttonClass = options.settings.buttonClass;
       this.buttonOptions = options.settings.buttonOptions;
       this.colorPalette = options.settings.colorPalette;
+      this.mobile = options.settings.mobile;
       this.topElement = options.topElement;
+      this.topElement.addClass('dd_container');
       return this.template = new DapperDoe.Models.Template({
         topElement: this.topElement,
         name: this.templateName,

@@ -23,6 +23,80 @@ class DapperDoe.Views.Content.Text extends DapperDoe.Views.Content
 	showToolbar: (e) ->
 		this.toolbar = new DapperDoe.Views.Toolbar.Text({content: this})
 
+class DapperDoe.Views.Content.Image extends DapperDoe.Views.Content
+
+	initialize: ->
+		this.events = _.extend({},DapperDoe.Views.Content.prototype.events,this.events)
+		this.tools = new DapperDoe.Views.Tools.Image({image: this.$el})
+
+	hideTools: (e) ->
+		this.tools.remove() unless this.$el.is(':hover')
+
+class DapperDoe.Views.Tools extends Backbone.View
+
+class DapperDoe.Views.Tools.Image extends DapperDoe.Views.Tools
+	events:
+		"click .image_upload" : "selectFile"
+		"mouseover" : -> this.$tools.show()
+		"mouseout" : -> this.$tools.hide()
+		"change .image_input" : "uploadImage"
+
+	initialize: (options) ->
+		this.$image = options.image
+		this.$image.wrap('<div class="dd_image_wrapper"></div>')
+		this.setElement(this.$image.parent('.dd_image_wrapper'))
+		this.$el.append(this.html)
+		this.$tools = this.$el.find('.dd_tools')
+		this.positionTools()
+		this.$tools.hide()
+
+	selectFile: ->
+		this.$tools.find(".image_input").trigger("click")
+
+	uploadImage: (e) =>
+		if e.target.files and e.target.files[0]
+			file = e.target.files[0]
+
+			if file.type.match('image.*')
+				reader = new FileReader()
+				reader.onload = (o) =>
+					this.$image.attr('src', o.target.result)
+					this.positionTools()
+				reader.readAsDataURL(file)
+			
+			#if window.FormData
+				# formdata = new FormData()
+				# formdata.append('source',file)
+				# formdata.append('type',this.model.rubyClassName())
+				# formdata.append('id',this.model.id)
+				# $.ajax "/pictures.json",
+				# 	type: 'POST'
+				# 	processData: false
+				# 	contentType: false
+				# 	dataType: 'json'
+				# 	cache: false
+				# 	data: formdata
+				# 	success: (response) =>
+				# 		this.model.view.updateImage(response)
+				# 		this.model.fetch()
+			else
+				alert('Type de fichier non autorisé')
+
+	positionTools: ->
+		this.$tools.css('left',(this.$image.width()/2)-(this.$el.find('.dd_tools').width()/2))
+		this.$tools.css('top',(this.$image.height()/2)-(this.$el.find('.dd_tools').height()/2))
+
+	remove: ->
+		this.$image.parent('.dd_image_wrapper').find('div').remove()
+		this.$image.unwrap()
+
+	html: ->
+		"<span class='dd_tools'>
+			<i class='image_link fa fa-link'></i><br/>
+			<i class='image_upload fa fa-image'></i>
+				<input type='file' class='image_input' style='display: none;'/>
+		</span>"
+
 class DapperDoe.Views.Toolbar.Text extends DapperDoe.Views.Toolbar
 	events:
 		"click button" : "editText"

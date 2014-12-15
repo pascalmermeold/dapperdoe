@@ -34,8 +34,11 @@ class DapperDoe.App extends Backbone.Model
     this.buttonClass = options.settings.buttonClass
     this.buttonOptions = options.settings.buttonOptions
     this.colorPalette = options.settings.colorPalette
+    this.mobile = options.settings.mobile
 
     this.topElement = options.topElement
+    this.topElement.addClass('dd_container')
+    #$('body').addClass('mobile') if this.mobile
 
     this.template = new DapperDoe.Models.Template
       topElement: this.topElement

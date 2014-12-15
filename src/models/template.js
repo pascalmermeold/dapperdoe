@@ -24,6 +24,7 @@
           $snippets.children().each(function() {
             return snippetsPreviews.add({
               previewUrl: $(this).data('preview'),
+              type: $(this).data('type'),
               html: $(this).html(),
               collection: snippetsPreviews
             });

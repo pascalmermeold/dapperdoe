@@ -54,22 +54,31 @@ class DapperDoe.Views.Snippet extends Backbone.View
   events:
     "mouseover" : "showTools"
     "mouseleave" : "hideTools"
+    "click .snippet_destroyer" : "destroy"
 
   initialize: ->
     this.addTools()
     this.parseSnippet()
 
   showTools: ->
-    this.$el.find('.tool').fadeIn()
+    this.$el.find('.tool').show()
 
   hideTools: ->
-    this.$el.find('.tool').fadeOut()
+    this.$el.find('.tool').hide()
 
   addTools: ->
-    this.$el.append("<div class='tool snippet_mover'><i class='fa fa-arrows'></i></div>")
+    this.$el.append("<div class='tools'>
+      <div class='tool snippet_mover'><i class='fa fa-arrows'></i></div>
+      <div class='tool snippet_destroyer'><i class='fa fa-trash'></i></div>
+    </div>")
 
   parseSnippet: ->
-    this.$el.find('p, h1, h2, h3, h4, h5, h6').each ->  new DapperDoe.Views.Content.Text({el: $(this)})
+    this.$el.find('a, p, h1, h2, h3, h4, h5, h6').each ->  new DapperDoe.Views.Content.Text({el: $(this)})
+    this.$el.find('img').each -> new DapperDoe.Views.Content.Image({el: $(this)})
+
+  destroy: ->
+    if confirm("Are you sure you want to destroy this snippet?")
+      this.$el.remove()
 
 class DapperDoe.Views.Snippets extends Backbone.View
 

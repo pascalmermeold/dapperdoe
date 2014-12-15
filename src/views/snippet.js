@@ -98,7 +98,8 @@
 
     Snippet.prototype.events = {
       "mouseover": "showTools",
-      "mouseleave": "hideTools"
+      "mouseleave": "hideTools",
+      "click .snippet_destroyer": "destroy"
     };
 
     Snippet.prototype.initialize = function() {
@@ -107,23 +108,34 @@
     };
 
     Snippet.prototype.showTools = function() {
-      return this.$el.find('.tool').fadeIn();
+      return this.$el.find('.tool').show();
     };
 
     Snippet.prototype.hideTools = function() {
-      return this.$el.find('.tool').fadeOut();
+      return this.$el.find('.tool').hide();
     };
 
     Snippet.prototype.addTools = function() {
-      return this.$el.append("<div class='tool snippet_mover'><i class='fa fa-arrows'></i></div>");
+      return this.$el.append("<div class='tools'> <div class='tool snippet_mover'><i class='fa fa-arrows'></i></div> <div class='tool snippet_destroyer'><i class='fa fa-trash'></i></div> </div>");
     };
 
     Snippet.prototype.parseSnippet = function() {
-      return this.$el.find('p, h1, h2, h3, h4, h5, h6').each(function() {
+      this.$el.find('a, p, h1, h2, h3, h4, h5, h6').each(function() {
         return new DapperDoe.Views.Content.Text({
           el: $(this)
         });
       });
+      return this.$el.find('img').each(function() {
+        return new DapperDoe.Views.Content.Image({
+          el: $(this)
+        });
+      });
+    };
+
+    Snippet.prototype.destroy = function() {
+      if (confirm("Are you sure you want to destroy this snippet?")) {
+        return this.$el.remove();
+      }
     };
 
     return Snippet;

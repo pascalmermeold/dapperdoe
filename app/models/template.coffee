@@ -11,6 +11,7 @@ class DapperDoe.Models.Template extends Backbone.Model
       $snippets.children().each ->
         snippetsPreviews.add
           previewUrl: $(this).data('preview')
+          type: $(this).data('type')
           html: $(this).html()
           collection: snippetsPreviews
 

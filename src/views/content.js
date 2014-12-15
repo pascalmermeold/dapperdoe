@@ -68,6 +68,111 @@
 
   })(DapperDoe.Views.Content);
 
+  DapperDoe.Views.Content.Image = (function(_super) {
+    __extends(Image, _super);
+
+    function Image() {
+      return Image.__super__.constructor.apply(this, arguments);
+    }
+
+    Image.prototype.initialize = function() {
+      this.events = _.extend({}, DapperDoe.Views.Content.prototype.events, this.events);
+      return this.tools = new DapperDoe.Views.Tools.Image({
+        image: this.$el
+      });
+    };
+
+    Image.prototype.hideTools = function(e) {
+      if (!this.$el.is(':hover')) {
+        return this.tools.remove();
+      }
+    };
+
+    return Image;
+
+  })(DapperDoe.Views.Content);
+
+  DapperDoe.Views.Tools = (function(_super) {
+    __extends(Tools, _super);
+
+    function Tools() {
+      return Tools.__super__.constructor.apply(this, arguments);
+    }
+
+    return Tools;
+
+  })(Backbone.View);
+
+  DapperDoe.Views.Tools.Image = (function(_super) {
+    __extends(Image, _super);
+
+    function Image() {
+      this.uploadImage = __bind(this.uploadImage, this);
+      return Image.__super__.constructor.apply(this, arguments);
+    }
+
+    Image.prototype.events = {
+      "click .image_upload": "selectFile",
+      "mouseover": function() {
+        return this.$tools.show();
+      },
+      "mouseout": function() {
+        return this.$tools.hide();
+      },
+      "change .image_input": "uploadImage"
+    };
+
+    Image.prototype.initialize = function(options) {
+      this.$image = options.image;
+      this.$image.wrap('<div class="dd_image_wrapper"></div>');
+      this.setElement(this.$image.parent('.dd_image_wrapper'));
+      this.$el.append(this.html);
+      this.$tools = this.$el.find('.dd_tools');
+      this.positionTools();
+      return this.$tools.hide();
+    };
+
+    Image.prototype.selectFile = function() {
+      return this.$tools.find(".image_input").trigger("click");
+    };
+
+    Image.prototype.uploadImage = function(e) {
+      var file, reader;
+      if (e.target.files && e.target.files[0]) {
+        file = e.target.files[0];
+        if (file.type.match('image.*')) {
+          reader = new FileReader();
+          reader.onload = (function(_this) {
+            return function(o) {
+              _this.$image.attr('src', o.target.result);
+              return _this.positionTools();
+            };
+          })(this);
+          return reader.readAsDataURL(file);
+        } else {
+          return alert('Type de fichier non autorisé');
+        }
+      }
+    };
+
+    Image.prototype.positionTools = function() {
+      this.$tools.css('left', (this.$image.width() / 2) - (this.$el.find('.dd_tools').width() / 2));
+      return this.$tools.css('top', (this.$image.height() / 2) - (this.$el.find('.dd_tools').height() / 2));
+    };
+
+    Image.prototype.remove = function() {
+      this.$image.parent('.dd_image_wrapper').find('div').remove();
+      return this.$image.unwrap();
+    };
+
+    Image.prototype.html = function() {
+      return "<span class='dd_tools'> <i class='image_link fa fa-link'></i><br/> <i class='image_upload fa fa-image'></i> <input type='file' class='image_input' style='display: none;'/> </span>";
+    };
+
+    return Image;
+
+  })(DapperDoe.Views.Tools);
+
   DapperDoe.Views.Toolbar.Text = (function(_super) {
     __extends(Text, _super);
 

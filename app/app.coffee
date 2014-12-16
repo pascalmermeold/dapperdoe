@@ -33,9 +33,8 @@ $.fn.extend
         settings: settings
         topElement: $(this)
 
-class DapperDoe.App extends Backbone.Model
-
-  initialize: (options) ->
+class DapperDoe.App
+  constructor: (options) ->
     this.snippetsPath = options.settings.snippetsPath
     this.buttonClass = options.settings.buttonClass
     this.buttonOptions = options.settings.buttonOptions
@@ -47,7 +46,7 @@ class DapperDoe.App extends Backbone.Model
     this.topElement = options.topElement
     $('body').addClass('mobile') if this.mobile
 
-    this.template = new DapperDoe.Models.Template
+    this.template = new DapperDoe.Template
       topElement: this.topElement
       path: this.snippetsPath
       callback: this.buildApp
@@ -57,10 +56,9 @@ class DapperDoe.App extends Backbone.Model
     window.app.buildUI()
 
   buildUI: ->
-    this.sidebar = new DapperDoe.Views.Sidebar
+    this.sidebar = new DapperDoe.Sidebar
       collection: this.template.snippetsPreviews
 
   initTopElement: ->
-    this.snippetsView = new DapperDoe.Views.App
+    this.view = new DapperDoe.AppView
       el: this.topElement
-      collection: new DapperDoe.Collections.Snippets

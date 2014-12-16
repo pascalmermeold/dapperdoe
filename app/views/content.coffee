@@ -1,47 +1,33 @@
-class DapperDoe.Views.Content extends Backbone.View
-	events:
-		"click" : "stopPropagation"
+class DapperDoe.Content
+	constructor: (options) ->
+		this.$el = options.el
+		this.$el.bind('click', (e) -> e.stopPropagation())
 
-	stopPropagation: (e) ->
-		e.stopPropagation()
+class DapperDoe.Toolbar
+	constructor: (options) ->
+		this.$el = $('div')
+		this.$el.bind('click', (e) -> e.stopPropagation())
 
-class DapperDoe.Views.Toolbar extends Backbone.View
-	events:
-		"click" : "stopPropagation"
-
-	stopPropagation: (e) ->
-		e.stopPropagation()
-
-class DapperDoe.Views.Content.Text extends DapperDoe.Views.Content
-	events:
-		"focus": "showToolbar"
-
-	initialize: ->
-		this.events = _.extend({},DapperDoe.Views.Content.prototype.events,this.events)
+class DapperDoe.Content.Text extends DapperDoe.Content
+	constructor: (options) ->
+		super(options)
 		this.$el.attr('contenteditable','true')
+		this.$el.bind("focus", => this.showToolbar())
 
 	showToolbar: (e) ->
-		this.toolbar = new DapperDoe.Views.Toolbar.Text({content: this})
+		this.toolbar = new DapperDoe.Toolbar.Text({content: this})
 
-class DapperDoe.Views.Content.Image extends DapperDoe.Views.Content
+class DapperDoe.Content.Image extends DapperDoe.Content
 
-	initialize: ->
-		this.events = _.extend({},DapperDoe.Views.Content.prototype.events,this.events)
-		this.tools = new DapperDoe.Views.Tools.Image({image: this.$el})
+	constructor: (options) ->
+		super(options)
+		this.tools = new DapperDoe.Tools.Image({image: this.$el})
 
-	hideTools: (e) ->
-		this.tools.remove() unless this.$el.is(':hover')
+class DapperDoe.Tools
 
-class DapperDoe.Views.Tools extends Backbone.View
+class DapperDoe.Tools.Image extends DapperDoe.Tools
 
-class DapperDoe.Views.Tools.Image extends DapperDoe.Views.Tools
-	events:
-		"click .image_upload" : "selectFile"
-		"mouseover" : -> this.$tools.show()
-		"mouseout" : -> this.$tools.hide()
-		"change .image_input" : "uploadImage"
-
-	initialize: (options) ->
+	constructor: (options) ->
 		this.$image = options.image
 		this.$image.wrap('<div class="dd_image_wrapper"></div>')
 		this.setElement(this.$image.parent('.dd_image_wrapper'))
@@ -49,6 +35,13 @@ class DapperDoe.Views.Tools.Image extends DapperDoe.Views.Tools
 		this.$tools = this.$el.find('.dd_tools')
 		this.positionTools()
 		this.$tools.hide()
+		this.events()
+
+	events: ->
+		this.$el.find(".image_upload").bind("click", => this.selectFile())
+		this.$el.bind("mouseover", => this.$tools.show())
+		this.$el.bind("mouseout", => this.$tools.hide())
+		this.$el.find(".image_input").bind("change", => this.uploadImage())
 
 	selectFile: ->
 		this.$tools.find(".image_input").trigger("click")
@@ -89,16 +82,18 @@ class DapperDoe.Views.Tools.Image extends DapperDoe.Views.Tools
 				<input type='file' class='image_input' style='display: none;'/>
 		</span>"
 
-class DapperDoe.Views.Toolbar.Text extends DapperDoe.Views.Toolbar
-	events:
-		"click button" : "editText"
+class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 
-	initialize: (options) ->
+	constructor: (options) ->
+		super(options)
 		this.content = options.content
-		this.events = _.extend({},DapperDoe.Views.Toolbar.prototype.events,this.events)
-		window.app.snippetsView.removeToolbars()
+		window.app.view.removeToolbars()
 		this.$el.html(this.html)
 		$(window.app.topElement).append(this.$el)
+		this.events()
+
+	events: ->
+		this.$el.find("button").bind("click", => this.editText())
 
 	editText: (e) =>
 		window.app.lastSel = rangy.saveSelection()
@@ -107,12 +102,12 @@ class DapperDoe.Views.Toolbar.Text extends DapperDoe.Views.Toolbar
 			when "bold" then document.execCommand('bold', false, null)
 			when "italic" then document.execCommand('italic', false, null)
 			when "underline" then document.execCommand('underline', false, null)
-			when "text-color" then new DapperDoe.Views.Modal.Color({callback: this.applyForeColor})
-			when "background-color" then new DapperDoe.Views.Modal.Color({callback: this.applyHiliteColor})
+			when "text-color" then new DapperDoe.Modal.Color({callback: this.applyForeColor})
+			when "background-color" then new DapperDoe.Modal.Color({callback: this.applyHiliteColor})
 			when "align-left" then document.execCommand('justifyLeft', false, null)
 			when "align-center" then document.execCommand('justifyCenter', false, null)
 			when "align-right" then document.execCommand('justifyRight', false, null)
-			when "link" then new DapperDoe.Views.Modal.Url()
+			when "link" then new DapperDoe.Modal.Url()
 			when "unlink" then document.execCommand('unlink', false, null)
 			when "list" then document.execCommand('insertUnorderedList', false, null)
 			when "clear"
@@ -145,15 +140,17 @@ class DapperDoe.Views.Toolbar.Text extends DapperDoe.Views.Toolbar
 		rangy.restoreSelection(app.lastSel)
 		document.execCommand('hiliteColor', false, color)
 
-class DapperDoe.Views.Modal extends Backbone.View
-	events:
-		"click" : "stopPropagation"
-		"click .dd_submit_modal" : "doAction"
-		"click .dd_close_modal" : "closeModal"
+class DapperDoe.Modal
 
-	initialize: (options) ->
+	constructor: (options) ->
 		this.$el.html(this.html)
 		$(window.app.topElement).append(this.$el)
+		this.events()
+
+	events: ->
+		this.$el.bind("click", => this.stopPropagation())
+		this.$el.find(".dd_submit_modal").bind("click", => this.doAction())
+		this.$el.find(".dd_close_modal").bind("click ", => this.closeModal())
 
 	closeModal: ->
 		this.$el.remove()
@@ -171,14 +168,15 @@ class DapperDoe.Views.Modal extends Backbone.View
 		</div>")
 
 
-class DapperDoe.Views.Modal.Color extends DapperDoe.Views.Modal
-	events:
-		"click .color" : "doAction"
+class DapperDoe.Modal.Color extends DapperDoe.Modal
 
-	initialize: (options)->
-		super()
-		this.events = _.extend({},DapperDoe.Views.Modal.prototype.events,this.events)
+	constructor: (options)->
+		super(options)
 		this.callback = options.callback
+		this.events()
+
+	events: ->
+		this.find(".color").bind("click", => this.doAction())
 
 	doAction: (e) ->
 		color = $(e.target).data('color')
@@ -210,7 +208,10 @@ class DapperDoe.Views.Modal.Color extends DapperDoe.Views.Modal
 
 		return $html
 
-class DapperDoe.Views.Modal.Url extends DapperDoe.Views.Modal
+class DapperDoe.Modal.Url extends DapperDoe.Modal
+
+	constructor: (options) ->
+		super(options)
 
 	doAction: ->
 		this.url = this.$el.find('.dd_url').val()

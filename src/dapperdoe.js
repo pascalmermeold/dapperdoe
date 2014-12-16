@@ -66,19 +66,11 @@
 }).call(this);
 
 (function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
-
-  DapperDoe.Models.Template = (function(_super) {
-    __extends(Template, _super);
-
-    function Template() {
-      return Template.__super__.constructor.apply(this, arguments);
+  DapperDoe.Template = (function() {
+    function Template(options) {
+      this.attributes = options;
+      this.parseSnippets(options.callback);
     }
-
-    Template.prototype.initialize = function(options) {
-      return this.parseSnippets(options.callback);
-    };
 
     Template.prototype.parseSnippets = function(callback) {
       var $snippets;
@@ -86,13 +78,12 @@
       return $snippets.load("" + this.attributes.path + "/snippets.html", (function(_this) {
         return function() {
           var snippetsPreviews;
-          snippetsPreviews = new DapperDoe.Collections.SnippetsPreviews();
+          snippetsPreviews = [];
           $snippets.children().each(function() {
-            return snippetsPreviews.add({
+            return snippetsPreviews.push({
               previewUrl: $(this).data('preview'),
               type: $(this).data('type'),
-              html: $(this).html(),
-              collection: snippetsPreviews
+              html: $(this).html()
             });
           });
           _this.snippetsPreviews = snippetsPreviews;
@@ -103,7 +94,7 @@
 
     return Template;
 
-  })(Backbone.Model);
+  })();
 
 }).call(this);
 
@@ -112,132 +103,110 @@
     __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
     __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  DapperDoe.Views.Content = (function(_super) {
-    __extends(Content, _super);
-
-    function Content() {
-      return Content.__super__.constructor.apply(this, arguments);
+  DapperDoe.Content = (function() {
+    function Content(options) {
+      this.$el = options.el;
+      this.$el.bind('click', function(e) {
+        return e.stopPropagation();
+      });
     }
-
-    Content.prototype.events = {
-      "click": "stopPropagation"
-    };
-
-    Content.prototype.stopPropagation = function(e) {
-      return e.stopPropagation();
-    };
 
     return Content;
 
-  })(Backbone.View);
+  })();
 
-  DapperDoe.Views.Toolbar = (function(_super) {
-    __extends(Toolbar, _super);
-
-    function Toolbar() {
-      return Toolbar.__super__.constructor.apply(this, arguments);
+  DapperDoe.Toolbar = (function() {
+    function Toolbar(options) {
+      this.$el = $('div');
+      this.$el.bind('click', function(e) {
+        return e.stopPropagation();
+      });
     }
-
-    Toolbar.prototype.events = {
-      "click": "stopPropagation"
-    };
-
-    Toolbar.prototype.stopPropagation = function(e) {
-      return e.stopPropagation();
-    };
 
     return Toolbar;
 
-  })(Backbone.View);
+  })();
 
-  DapperDoe.Views.Content.Text = (function(_super) {
+  DapperDoe.Content.Text = (function(_super) {
     __extends(Text, _super);
 
-    function Text() {
-      return Text.__super__.constructor.apply(this, arguments);
+    function Text(options) {
+      Text.__super__.constructor.call(this, options);
+      this.$el.attr('contenteditable', 'true');
+      this.$el.bind("focus", (function(_this) {
+        return function() {
+          return _this.showToolbar();
+        };
+      })(this));
     }
 
-    Text.prototype.events = {
-      "focus": "showToolbar"
-    };
-
-    Text.prototype.initialize = function() {
-      this.events = _.extend({}, DapperDoe.Views.Content.prototype.events, this.events);
-      return this.$el.attr('contenteditable', 'true');
-    };
-
     Text.prototype.showToolbar = function(e) {
-      return this.toolbar = new DapperDoe.Views.Toolbar.Text({
+      return this.toolbar = new DapperDoe.Toolbar.Text({
         content: this
       });
     };
 
     return Text;
 
-  })(DapperDoe.Views.Content);
+  })(DapperDoe.Content);
 
-  DapperDoe.Views.Content.Image = (function(_super) {
+  DapperDoe.Content.Image = (function(_super) {
     __extends(Image, _super);
 
-    function Image() {
-      return Image.__super__.constructor.apply(this, arguments);
-    }
-
-    Image.prototype.initialize = function() {
-      this.events = _.extend({}, DapperDoe.Views.Content.prototype.events, this.events);
-      return this.tools = new DapperDoe.Views.Tools.Image({
+    function Image(options) {
+      Image.__super__.constructor.call(this, options);
+      this.tools = new DapperDoe.Tools.Image({
         image: this.$el
       });
-    };
-
-    Image.prototype.hideTools = function(e) {
-      if (!this.$el.is(':hover')) {
-        return this.tools.remove();
-      }
-    };
+    }
 
     return Image;
 
-  })(DapperDoe.Views.Content);
+  })(DapperDoe.Content);
 
-  DapperDoe.Views.Tools = (function(_super) {
-    __extends(Tools, _super);
-
-    function Tools() {
-      return Tools.__super__.constructor.apply(this, arguments);
-    }
+  DapperDoe.Tools = (function() {
+    function Tools() {}
 
     return Tools;
 
-  })(Backbone.View);
+  })();
 
-  DapperDoe.Views.Tools.Image = (function(_super) {
+  DapperDoe.Tools.Image = (function(_super) {
     __extends(Image, _super);
 
-    function Image() {
+    function Image(options) {
       this.uploadImage = __bind(this.uploadImage, this);
-      return Image.__super__.constructor.apply(this, arguments);
-    }
-
-    Image.prototype.events = {
-      "click .image_upload": "selectFile",
-      "mouseover": function() {
-        return this.$tools.show();
-      },
-      "mouseout": function() {
-        return this.$tools.hide();
-      },
-      "change .image_input": "uploadImage"
-    };
-
-    Image.prototype.initialize = function(options) {
       this.$image = options.image;
       this.$image.wrap('<div class="dd_image_wrapper"></div>');
       this.setElement(this.$image.parent('.dd_image_wrapper'));
       this.$el.append(this.html);
       this.$tools = this.$el.find('.dd_tools');
       this.positionTools();
-      return this.$tools.hide();
+      this.$tools.hide();
+      this.events();
+    }
+
+    Image.prototype.events = function() {
+      this.$el.find(".image_upload").bind("click", (function(_this) {
+        return function() {
+          return _this.selectFile();
+        };
+      })(this));
+      this.$el.bind("mouseover", (function(_this) {
+        return function() {
+          return _this.$tools.show();
+        };
+      })(this));
+      this.$el.bind("mouseout", (function(_this) {
+        return function() {
+          return _this.$tools.hide();
+        };
+      })(this));
+      return this.$el.find(".image_input").bind("change", (function(_this) {
+        return function() {
+          return _this.uploadImage();
+        };
+      })(this));
     };
 
     Image.prototype.selectFile = function() {
@@ -290,26 +259,27 @@
 
     return Image;
 
-  })(DapperDoe.Views.Tools);
+  })(DapperDoe.Tools);
 
-  DapperDoe.Views.Toolbar.Text = (function(_super) {
+  DapperDoe.Toolbar.Text = (function(_super) {
     __extends(Text, _super);
 
-    function Text() {
+    function Text(options) {
       this.editText = __bind(this.editText, this);
-      return Text.__super__.constructor.apply(this, arguments);
+      Text.__super__.constructor.call(this, options);
+      this.content = options.content;
+      window.app.view.removeToolbars();
+      this.$el.html(this.html);
+      $(window.app.topElement).append(this.$el);
+      this.events();
     }
 
-    Text.prototype.events = {
-      "click button": "editText"
-    };
-
-    Text.prototype.initialize = function(options) {
-      this.content = options.content;
-      this.events = _.extend({}, DapperDoe.Views.Toolbar.prototype.events, this.events);
-      window.app.snippetsView.removeToolbars();
-      this.$el.html(this.html);
-      return $(window.app.topElement).append(this.$el);
+    Text.prototype.events = function() {
+      return this.$el.find("button").bind("click", (function(_this) {
+        return function() {
+          return _this.editText();
+        };
+      })(this));
     };
 
     Text.prototype.editText = function(e) {
@@ -322,11 +292,11 @@
         case "underline":
           return document.execCommand('underline', false, null);
         case "text-color":
-          return new DapperDoe.Views.Modal.Color({
+          return new DapperDoe.Modal.Color({
             callback: this.applyForeColor
           });
         case "background-color":
-          return new DapperDoe.Views.Modal.Color({
+          return new DapperDoe.Modal.Color({
             callback: this.applyHiliteColor
           });
         case "align-left":
@@ -336,7 +306,7 @@
         case "align-right":
           return document.execCommand('justifyRight', false, null);
         case "link":
-          return new DapperDoe.Views.Modal.Url();
+          return new DapperDoe.Modal.Url();
         case "unlink":
           return document.execCommand('unlink', false, null);
         case "list":
@@ -365,24 +335,31 @@
 
     return Text;
 
-  })(DapperDoe.Views.Toolbar);
+  })(DapperDoe.Toolbar);
 
-  DapperDoe.Views.Modal = (function(_super) {
-    __extends(Modal, _super);
-
-    function Modal() {
-      return Modal.__super__.constructor.apply(this, arguments);
+  DapperDoe.Modal = (function() {
+    function Modal(options) {
+      this.$el.html(this.html);
+      $(window.app.topElement).append(this.$el);
+      this.events();
     }
 
-    Modal.prototype.events = {
-      "click": "stopPropagation",
-      "click .dd_submit_modal": "doAction",
-      "click .dd_close_modal": "closeModal"
-    };
-
-    Modal.prototype.initialize = function(options) {
-      this.$el.html(this.html);
-      return $(window.app.topElement).append(this.$el);
+    Modal.prototype.events = function() {
+      this.$el.bind("click", (function(_this) {
+        return function() {
+          return _this.stopPropagation();
+        };
+      })(this));
+      this.$el.find(".dd_submit_modal").bind("click", (function(_this) {
+        return function() {
+          return _this.doAction();
+        };
+      })(this));
+      return this.$el.find(".dd_close_modal").bind("click ", (function(_this) {
+        return function() {
+          return _this.closeModal();
+        };
+      })(this));
     };
 
     Modal.prototype.closeModal = function() {
@@ -399,24 +376,24 @@
 
     return Modal;
 
-  })(Backbone.View);
+  })();
 
-  DapperDoe.Views.Modal.Color = (function(_super) {
+  DapperDoe.Modal.Color = (function(_super) {
     __extends(Color, _super);
 
-    function Color() {
+    function Color(options) {
       this.html = __bind(this.html, this);
-      return Color.__super__.constructor.apply(this, arguments);
+      Color.__super__.constructor.call(this, options);
+      this.callback = options.callback;
+      this.events();
     }
 
-    Color.prototype.events = {
-      "click .color": "doAction"
-    };
-
-    Color.prototype.initialize = function(options) {
-      Color.__super__.initialize.call(this);
-      this.events = _.extend({}, DapperDoe.Views.Modal.prototype.events, this.events);
-      return this.callback = options.callback;
+    Color.prototype.events = function() {
+      return this.find(".color").bind("click", (function(_this) {
+        return function() {
+          return _this.doAction();
+        };
+      })(this));
     };
 
     Color.prototype.doAction = function(e) {
@@ -460,13 +437,13 @@
 
     return Color;
 
-  })(DapperDoe.Views.Modal);
+  })(DapperDoe.Modal);
 
-  DapperDoe.Views.Modal.Url = (function(_super) {
+  DapperDoe.Modal.Url = (function(_super) {
     __extends(Url, _super);
 
-    function Url() {
-      return Url.__super__.constructor.apply(this, arguments);
+    function Url(options) {
+      Url.__super__.constructor.call(this, options);
     }
 
     Url.prototype.doAction = function() {
@@ -515,35 +492,34 @@
 
     return Url;
 
-  })(DapperDoe.Views.Modal);
+  })(DapperDoe.Modal);
 
 }).call(this);
 
 (function() {
-  var __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; },
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  DapperDoe.Views.SnippetPreview = (function(_super) {
-    __extends(SnippetPreview, _super);
-
-    function SnippetPreview() {
-      return SnippetPreview.__super__.constructor.apply(this, arguments);
+  DapperDoe.SnippetPreview = (function() {
+    function SnippetPreview(options) {
+      this.snippet = options.snippet;
+      this.index = options.index;
+      this.buildSnippet();
+      this.enableDraggable();
+      this.events();
     }
 
-    SnippetPreview.prototype.events = {
-      "addSnippet": "addSnippet"
+    SnippetPreview.prototype.events = function() {
+      return this.$el.bind('addSnippet', (function(_this) {
+        return function(event, params) {
+          return _this.addSnippet(event, params);
+        };
+      })(this));
     };
 
-    SnippetPreview.prototype.initialize = function(options) {
-      this.buildSnippet(options.index);
-      return this.enableDraggable();
-    };
-
-    SnippetPreview.prototype.buildSnippet = function(index) {
+    SnippetPreview.prototype.buildSnippet = function() {
       this.$el = $("<div class='dd_snippet'></div>");
-      this.$el.attr('id', "dd_snippet" + index);
-      return this.$el.append($("<img src='" + window.app.template.attributes.path + "/" + this.model.attributes.previewUrl + "' />"));
+      this.$el.attr('id', "dd_snippet" + this.index);
+      return this.$el.append($("<img src='" + window.app.template.attributes.path + "/" + this.snippet.previewUrl + "' />"));
     };
 
     SnippetPreview.prototype.enableDraggable = function() {
@@ -556,32 +532,30 @@
     };
 
     SnippetPreview.prototype.addSnippet = function(event, params) {
-      console.log(params.element);
       params.element.find('img').remove();
-      params.element.append($(this.model.attributes.html));
-      return new DapperDoe.Views.Snippet({
-        model: this.model,
+      params.element.append($(this.snippet.html));
+      return new DapperDoe.Snippet({
         el: params.element
       });
     };
 
     return SnippetPreview;
 
-  })(Backbone.View);
+  })();
 
-  DapperDoe.Views.Sidebar = (function(_super) {
-    __extends(Sidebar, _super);
-
-    function Sidebar() {
-      return Sidebar.__super__.constructor.apply(this, arguments);
+  DapperDoe.Sidebar = (function() {
+    function Sidebar(options) {
+      this.collection = options.collection;
+      this.buildSidebar();
+      this.events();
     }
 
-    Sidebar.prototype.events = {
-      "click .dd_sidebar_opener": "toggleSidebar"
-    };
-
-    Sidebar.prototype.initialize = function(options) {
-      return this.buildSidebar();
+    Sidebar.prototype.events = function() {
+      return this.$el.find('.dd_sidebar_opener').bind('click', (function(_this) {
+        return function() {
+          return _this.toggleSidebar();
+        };
+      })(this));
     };
 
     Sidebar.prototype.buildSidebar = function() {
@@ -589,13 +563,12 @@
       this.$el = $("<div id='dd_sidebar'></div>");
       this.$el.append("<span class='dd_sidebar_opener'><i class='fa fa-pencil'></i></span>");
       this.$el.append("<div class='dd_snippets_previews'></div>");
-      _ref = this.collection.models;
+      _ref = this.collection;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
         snippet = _ref[i];
-        snippet_view = new DapperDoe.Views.SnippetPreview({
-          model: snippet,
-          index: i,
-          collection: this.collection
+        snippet_view = new DapperDoe.SnippetPreview({
+          snippet: snippet,
+          index: i
         });
         this.$el.find('> div').append(snippet_view.$el);
       }
@@ -608,24 +581,32 @@
 
     return Sidebar;
 
-  })(Backbone.View);
+  })();
 
-  DapperDoe.Views.Snippet = (function(_super) {
-    __extends(Snippet, _super);
-
-    function Snippet() {
-      return Snippet.__super__.constructor.apply(this, arguments);
+  DapperDoe.Snippet = (function() {
+    function Snippet(options) {
+      this.$el = options.el;
+      this.addTools();
+      this.parseSnippet();
+      this.events();
     }
 
-    Snippet.prototype.events = {
-      "mouseover": "showTools",
-      "mouseleave": "hideTools",
-      "click .snippet_destroyer": "destroy"
-    };
-
-    Snippet.prototype.initialize = function() {
-      this.addTools();
-      return this.parseSnippet();
+    Snippet.prototype.events = function() {
+      this.$el.bind("mouseover", (function(_this) {
+        return function() {
+          return _this.showTools();
+        };
+      })(this));
+      this.$el.bind("mouseleave", (function(_this) {
+        return function() {
+          return _this.hideTools();
+        };
+      })(this));
+      return this.$el.find(".snippet_destroyer").bind("click", (function(_this) {
+        return function() {
+          return _this.destroy();
+        };
+      })(this));
     };
 
     Snippet.prototype.showTools = function() {
@@ -642,12 +623,12 @@
 
     Snippet.prototype.parseSnippet = function() {
       this.$el.find('a, p, h1, h2, h3, h4, h5, h6').each(function() {
-        return new DapperDoe.Views.Content.Text({
+        return new DapperDoe.Content.Text({
           el: $(this)
         });
       });
       return this.$el.find('img').each(function() {
-        return new DapperDoe.Views.Content.Image({
+        return new DapperDoe.Content.Image({
           el: $(this)
         });
       });
@@ -661,39 +642,43 @@
 
     return Snippet;
 
-  })(Backbone.View);
+  })();
 
-  DapperDoe.Views.App = (function(_super) {
-    __extends(App, _super);
-
-    function App() {
+  DapperDoe.AppView = (function() {
+    function AppView(options) {
       this.addSnippet = __bind(this.addSnippet, this);
-      return App.__super__.constructor.apply(this, arguments);
-    }
-
-    App.prototype.events = {
-      "click": "removeToolbars",
-      "click #save_page_button": "savePage"
-    };
-
-    App.prototype.initialize = function() {
-      $('body').bind('click', (function(_this) {
-        return function() {
-          return _this.removeToolbars();
-        };
-      })(this));
+      this.$el = options.el;
       this.$el.addClass('dd_top_element');
       this.addTools();
-      return this.$el.sortable({
+      this.$el.sortable({
         items: ".dd_snippet",
         forcePlaceholderSize: true,
         axis: 'y',
         receive: this.addSnippet,
         handle: '.snippet_mover'
       });
+      this.events();
+    }
+
+    AppView.prototype.events = function() {
+      $('body').bind('click', (function(_this) {
+        return function() {
+          return _this.removeToolbars();
+        };
+      })(this));
+      this.$el.bind("click", (function(_this) {
+        return function() {
+          return _this.removeToolbars();
+        };
+      })(this));
+      return this.$el.find("#save_page_button").bind("click", (function(_this) {
+        return function() {
+          return _this.savePage();
+        };
+      })(this));
     };
 
-    App.prototype.addSnippet = function(event, ui) {
+    AppView.prototype.addSnippet = function(event, ui) {
       var index;
       index = this.$el.find('.dd_snippet').length;
       $(ui.helper).attr('id', "snippet_" + index);
@@ -703,16 +688,16 @@
       });
     };
 
-    App.prototype.removeToolbars = function(e) {
+    AppView.prototype.removeToolbars = function(e) {
       return $(window.app.topElement).find('.dd_toolbar').remove();
     };
 
-    App.prototype.addTools = function() {
+    AppView.prototype.addTools = function() {
       this.$el.append("<div class='loader'><i class='fa fa-circle-o-notch fa-spin'></i></div>");
       return this.$el.append("<div id='save_page_button'><i class='fa fa-save'></i> Save</div>");
     };
 
-    App.prototype.savePage = function() {
+    AppView.prototype.savePage = function() {
       var html;
       this.startLoader();
       html = this.$el.clone();
@@ -724,24 +709,22 @@
       })(this));
     };
 
-    App.prototype.startLoader = function() {
+    AppView.prototype.startLoader = function() {
       return this.$el.find('.loader').show();
     };
 
-    App.prototype.stopLoader = function() {
+    AppView.prototype.stopLoader = function() {
       return this.$el.find('.loader').hide();
     };
 
-    return App;
+    return AppView;
 
-  })(Backbone.View);
+  })();
 
 }).call(this);
 
 (function() {
-  var $,
-    __hasProp = {}.hasOwnProperty,
-    __extends = function(child, parent) { for (var key in parent) { if (__hasProp.call(parent, key)) child[key] = parent[key]; } function ctor() { this.constructor = child; } ctor.prototype = parent.prototype; child.prototype = new ctor(); child.__super__ = parent.prototype; return child; };
+  var $;
 
   $ = jQuery;
 
@@ -785,14 +768,8 @@
     }
   });
 
-  DapperDoe.App = (function(_super) {
-    __extends(App, _super);
-
-    function App() {
-      return App.__super__.constructor.apply(this, arguments);
-    }
-
-    App.prototype.initialize = function(options) {
+  DapperDoe.App = (function() {
+    function App(options) {
       this.snippetsPath = options.settings.snippetsPath;
       this.buttonClass = options.settings.buttonClass;
       this.buttonOptions = options.settings.buttonOptions;
@@ -804,12 +781,12 @@
       if (this.mobile) {
         $('body').addClass('mobile');
       }
-      return this.template = new DapperDoe.Models.Template({
+      this.template = new DapperDoe.Template({
         topElement: this.topElement,
         path: this.snippetsPath,
         callback: this.buildApp
       });
-    };
+    }
 
     App.prototype.buildApp = function() {
       window.app.initTopElement();
@@ -817,21 +794,20 @@
     };
 
     App.prototype.buildUI = function() {
-      return this.sidebar = new DapperDoe.Views.Sidebar({
+      return this.sidebar = new DapperDoe.Sidebar({
         collection: this.template.snippetsPreviews
       });
     };
 
     App.prototype.initTopElement = function() {
-      return this.snippetsView = new DapperDoe.Views.App({
-        el: this.topElement,
-        collection: new DapperDoe.Collections.Snippets
+      return this.view = new DapperDoe.AppView({
+        el: this.topElement
       });
     };
 
     return App;
 
-  })(Backbone.Model);
+  })();
 
 }).call(this);
 

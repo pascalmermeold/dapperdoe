@@ -1,16 +1,19 @@
-class DapperDoe.Views.SnippetPreview extends Backbone.View
+class DapperDoe.SnippetPreview
 
-  events:
-    "addSnippet" : "addSnippet"
-
-  initialize: (options) ->
-    this.buildSnippet(options.index)
+  constructor: (options) ->
+    @snippet = options.snippet
+    @index = options.index
+    this.buildSnippet()
     this.enableDraggable()
+    this.events()
 
-  buildSnippet: (index) ->
+  events: ->
+    this.$el.bind('addSnippet', (event, params) => this.addSnippet(event, params))
+
+  buildSnippet: () ->
     this.$el = $("<div class='dd_snippet'></div>")
-    this.$el.attr('id', "dd_snippet#{index}")
-    this.$el.append($("<img src='#{window.app.template.attributes.path}/#{this.model.attributes.previewUrl}' />"))
+    this.$el.attr('id', "dd_snippet#{@index}")
+    this.$el.append($("<img src='#{window.app.template.attributes.path}/#{@snippet.previewUrl}' />"))
 
   enableDraggable: ->
     this.$el.draggable
@@ -20,28 +23,28 @@ class DapperDoe.Views.SnippetPreview extends Backbone.View
         connectToSortable: window.app.topElement
 
   addSnippet: (event, params) ->
-    console.log params.element
     params.element.find('img').remove()
-    params.element.append $(this.model.attributes.html)
-    new DapperDoe.Views.Snippet({model: this.model, el: params.element})
+    params.element.append $(@snippet.html)
+    new DapperDoe.Snippet({el: params.element})
 
-class DapperDoe.Views.Sidebar extends Backbone.View
-
-  events:
-    "click .dd_sidebar_opener": "toggleSidebar"
+class DapperDoe.Sidebar
   
-  initialize: (options) ->
+  constructor: (options) ->
+    @collection = options.collection
     this.buildSidebar()
+    this.events()
+
+  events: ->
+    this.$el.find('.dd_sidebar_opener').bind('click', => this.toggleSidebar())
 
   buildSidebar: ->
     this.$el = $("<div id='dd_sidebar'></div>")
     this.$el.append("<span class='dd_sidebar_opener'><i class='fa fa-pencil'></i></span>")
     this.$el.append("<div class='dd_snippets_previews'></div>")
-    for snippet, i in this.collection.models
-      snippet_view = new DapperDoe.Views.SnippetPreview
-        model: snippet
+    for snippet, i in @collection
+      snippet_view = new DapperDoe.SnippetPreview
+        snippet: snippet
         index: i
-        collection: this.collection
 
       this.$el.find('> div').append(snippet_view.$el)
 
@@ -50,16 +53,18 @@ class DapperDoe.Views.Sidebar extends Backbone.View
   toggleSidebar: () ->
     this.$el.toggleClass('opened', 200)
 
-class DapperDoe.Views.Snippet extends Backbone.View
+class DapperDoe.Snippet
 
-  events:
-    "mouseover" : "showTools"
-    "mouseleave" : "hideTools"
-    "click .snippet_destroyer" : "destroy"
-
-  initialize: ->
+  constructor: (options) ->
+    this.$el = options.el
     this.addTools()
     this.parseSnippet()
+    this.events()
+
+  events: ->
+    this.$el.bind("mouseover", => this.showTools())
+    this.$el.bind("mouseleave", => this.hideTools())
+    this.$el.find(".snippet_destroyer").bind("click", => this.destroy())
 
   showTools: ->
     this.$el.find('.tool').show()
@@ -74,21 +79,17 @@ class DapperDoe.Views.Snippet extends Backbone.View
     </div>")
 
   parseSnippet: ->
-    this.$el.find('a, p, h1, h2, h3, h4, h5, h6').each ->  new DapperDoe.Views.Content.Text({el: $(this)})
-    this.$el.find('img').each -> new DapperDoe.Views.Content.Image({el: $(this)})
+    this.$el.find('a, p, h1, h2, h3, h4, h5, h6').each ->  new DapperDoe.Content.Text({el: $(this)})
+    this.$el.find('img').each -> new DapperDoe.Content.Image({el: $(this)})
 
   destroy: ->
     if confirm("Are you sure you want to destroy this snippet?")
       this.$el.remove()
 
-class DapperDoe.Views.App extends Backbone.View
+class DapperDoe.AppView
 
-  events:
-    "click" : "removeToolbars"
-    "click #save_page_button" : "savePage"
-
-  initialize: ->
-    $('body').bind('click', => this.removeToolbars())
+  constructor: (options) ->
+    this.$el = options.el
     this.$el.addClass('dd_top_element')
     this.addTools()
     this.$el.sortable
@@ -97,6 +98,12 @@ class DapperDoe.Views.App extends Backbone.View
       axis: 'y'
       receive: this.addSnippet
       handle: '.snippet_mover'
+    this.events()
+
+  events: ->
+    $('body').bind('click', => this.removeToolbars())
+    this.$el.bind("click", => this.removeToolbars())
+    this.$el.find("#save_page_button").bind("click", => this.savePage())
 
   addSnippet: (event, ui) =>
     index = this.$el.find('.dd_snippet').length

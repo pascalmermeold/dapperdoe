@@ -5,7 +5,7 @@ class DapperDoe.Content
 
 class DapperDoe.Toolbar
 	constructor: (options) ->
-		this.$el = $('div')
+		this.$el = $('<div></div>')
 		this.$el.bind('click', (e) -> e.stopPropagation())
 
 class DapperDoe.Content.Text extends DapperDoe.Content
@@ -30,7 +30,7 @@ class DapperDoe.Tools.Image extends DapperDoe.Tools
 	constructor: (options) ->
 		this.$image = options.image
 		this.$image.wrap('<div class="dd_image_wrapper"></div>')
-		this.setElement(this.$image.parent('.dd_image_wrapper'))
+		this.$el = this.$image.parent('.dd_image_wrapper')
 		this.$el.append(this.html)
 		this.$tools = this.$el.find('.dd_tools')
 		this.positionTools()
@@ -41,7 +41,7 @@ class DapperDoe.Tools.Image extends DapperDoe.Tools
 		this.$el.find(".image_upload").bind("click", => this.selectFile())
 		this.$el.bind("mouseover", => this.$tools.show())
 		this.$el.bind("mouseout", => this.$tools.hide())
-		this.$el.find(".image_input").bind("change", => this.uploadImage())
+		this.$el.find(".image_input").bind("change", (e) => this.uploadImage(e))
 
 	selectFile: ->
 		this.$tools.find(".image_input").trigger("click")
@@ -77,7 +77,7 @@ class DapperDoe.Tools.Image extends DapperDoe.Tools
 
 	html: ->
 		"<span class='dd_tools'>
-			<i class='image_link fa fa-link'></i><br/>
+			<!--<i class='image_link fa fa-link'></i><br/>-->
 			<i class='image_upload fa fa-image'></i>
 				<input type='file' class='image_input' style='display: none;'/>
 		</span>"
@@ -93,7 +93,7 @@ class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 		this.events()
 
 	events: ->
-		this.$el.find("button").bind("click", => this.editText())
+		this.$el.find("button").bind("click", (e) => this.editText(e))
 
 	editText: (e) =>
 		window.app.lastSel = rangy.saveSelection()
@@ -143,14 +143,16 @@ class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 class DapperDoe.Modal
 
 	constructor: (options) ->
-		this.$el.html(this.html)
+		this.$el = this.html()
 		$(window.app.topElement).append(this.$el)
 		this.events()
 
 	events: ->
-		this.$el.bind("click", => this.stopPropagation())
+		this.$el.bind("click", (e) => this.stopPropagation(e))
 		this.$el.find(".dd_submit_modal").bind("click", => this.doAction())
-		this.$el.find(".dd_close_modal").bind("click ", => this.closeModal())
+		this.$el.find(".dd_close_modal").bind("click", => this.closeModal())
+
+	doAction: ->
 
 	closeModal: ->
 		this.$el.remove()
@@ -176,7 +178,7 @@ class DapperDoe.Modal.Color extends DapperDoe.Modal
 		this.events()
 
 	events: ->
-		this.find(".color").bind("click", => this.doAction())
+		this.$el.find(".color").bind("click", (e) => this.doAction(e))
 
 	doAction: (e) ->
 		color = $(e.target).data('color')
@@ -256,6 +258,5 @@ class DapperDoe.Modal.Url extends DapperDoe.Modal
 						#{name} <input type='radio' name='#{key}' value='#{klass}' />
 					</label>")
 
-			console.log $html.find("input[name=#{key}]:first")
 			$html.find("input[name=#{key}]:first").attr('checked', true);
 		return $html

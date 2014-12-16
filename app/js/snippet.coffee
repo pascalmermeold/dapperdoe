@@ -99,6 +99,7 @@ class DapperDoe.AppView
       receive: this.addSnippet
       handle: '.snippet_mover'
     this.events()
+    this.parsePage()
 
   events: ->
     $('body').bind('click', => this.removeToolbars())
@@ -117,6 +118,10 @@ class DapperDoe.AppView
   addTools: ->
     this.$el.append("<div class='loader'><i class='fa fa-circle-o-notch fa-spin'></i></div>")
     this.$el.append("<div id='save_page_button'><i class='fa fa-save'></i> Save</div>")
+
+  parsePage: ->
+    this.$el.find('.dd_snippet').each (index, snippet) ->
+      new DapperDoe.Snippet({el: $(snippet)})
 
   savePage: ->
     this.startLoader()

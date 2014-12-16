@@ -15,7 +15,7 @@ module.exports = function(grunt) {
     coffee: {
       compile: {
         files: {
-          'src/dapperdoe.js': ['app/dapperdoe.coffee', 'app/models/*.coffee', 'app/views/*.coffee', 'app/app.coffee'] // compile and concat into single file
+          'src/dapperdoe.js': ['app/js/main.coffee', 'app/js/template.coffee', 'app/js/snippet.coffee', 'app/js/content.coffee', 'app/js/app.coffee'] // compile and concat into single file
         }
       }
     },
@@ -54,7 +54,7 @@ module.exports = function(grunt) {
     },
     watch: {
       scripts: {
-        files: ['app/dapperdoe.coffee', 'app/models/*.coffee', 'app/views/*.coffee', 'app/app.coffee'],
+        files: ['app/js/*.coffee'],
         tasks: ['coffee', 'concat', 'uglify']
       },
       watch: {

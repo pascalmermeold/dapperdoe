@@ -39,8 +39,10 @@ module.exports = function(grunt) {
       },
     },
     less: {
-      files: {
-        "src/dapperdoe.css": "app/css/dapperdoe.less"
+      development: {
+        files: {
+          "src/dapperdoe.css": "app/css/dapperdoe.less"
+        }
       }
     },
     cssmin: {

@@ -64,21 +64,13 @@ class DapperDoe.Views.Tools.Image extends DapperDoe.Views.Tools
 					this.positionTools()
 				reader.readAsDataURL(file)
 			
-			#if window.FormData
-				# formdata = new FormData()
-				# formdata.append('source',file)
-				# formdata.append('type',this.model.rubyClassName())
-				# formdata.append('id',this.model.id)
-				# $.ajax "/pictures.json",
-				# 	type: 'POST'
-				# 	processData: false
-				# 	contentType: false
-				# 	dataType: 'json'
-				# 	cache: false
-				# 	data: formdata
-				# 	success: (response) =>
-				# 		this.model.view.updateImage(response)
-				# 		this.model.fetch()
+			if window.FormData
+				formdata = new FormData()
+				formdata.append('source',file)
+				window.app.saveImageCallback(formdata, (url) =>
+					if url
+						this.$image.attr('src', url)
+				)
 			else
 				alert('Type de fichier non autorisé')
 

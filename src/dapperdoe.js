@@ -1,4 +1,4 @@
-/*! Dapper Doe - v0.1.0 - 2014-12-15
+/*! Dapper Doe - v0.1.0 - 2014-12-16
 * https://github.com/pascalmerme/dapperdoe
 * Copyright (c) 2014 Pascal Merme; Licensed MIT */
 (function() {
@@ -83,7 +83,7 @@
     Template.prototype.parseSnippets = function(callback) {
       var $snippets;
       $snippets = $('<div id="dd_snippets_loader"></div>');
-      return $snippets.load("" + this.attributes.name + "/snippets.html", (function(_this) {
+      return $snippets.load("" + this.attributes.path + "/snippets.html", (function(_this) {
         return function() {
           var snippetsPreviews;
           snippetsPreviews = new DapperDoe.Collections.SnippetsPreviews();
@@ -245,7 +245,7 @@
     };
 
     Image.prototype.uploadImage = function(e) {
-      var file, reader;
+      var file, formdata, reader;
       if (e.target.files && e.target.files[0]) {
         file = e.target.files[0];
         if (file.type.match('image.*')) {
@@ -256,7 +256,18 @@
               return _this.positionTools();
             };
           })(this);
-          return reader.readAsDataURL(file);
+          reader.readAsDataURL(file);
+        }
+        if (window.FormData) {
+          formdata = new FormData();
+          formdata.append('source', file);
+          return window.app.saveImageCallback(formdata, (function(_this) {
+            return function(url) {
+              if (url) {
+                return _this.$image.attr('src', url);
+              }
+            };
+          })(this));
         } else {
           return alert('Type de fichier non autorisé');
         }
@@ -532,7 +543,7 @@
     SnippetPreview.prototype.buildSnippet = function(index) {
       this.$el = $("<div class='dd_snippet'></div>");
       this.$el.attr('id', "dd_snippet" + index);
-      return this.$el.append($("<img src='" + window.app.template.attributes.name + "/" + this.model.attributes.previewUrl + "' />"));
+      return this.$el.append($("<img src='" + window.app.template.attributes.path + "/" + this.model.attributes.previewUrl + "' />"));
     };
 
     SnippetPreview.prototype.enableDraggable = function() {
@@ -545,6 +556,7 @@
     };
 
     SnippetPreview.prototype.addSnippet = function(event, params) {
+      console.log(params.element);
       params.element.find('img').remove();
       params.element.append($(this.model.attributes.html));
       return new DapperDoe.Views.Snippet({
@@ -651,20 +663,27 @@
 
   })(Backbone.View);
 
-  DapperDoe.Views.Snippets = (function(_super) {
-    __extends(Snippets, _super);
+  DapperDoe.Views.App = (function(_super) {
+    __extends(App, _super);
 
-    function Snippets() {
+    function App() {
       this.addSnippet = __bind(this.addSnippet, this);
-      return Snippets.__super__.constructor.apply(this, arguments);
+      return App.__super__.constructor.apply(this, arguments);
     }
 
-    Snippets.prototype.events = {
-      "click": "removeToolbars"
+    App.prototype.events = {
+      "click": "removeToolbars",
+      "click #save_page_button": "savePage"
     };
 
-    Snippets.prototype.initialize = function() {
+    App.prototype.initialize = function() {
+      $('body').bind('click', (function(_this) {
+        return function() {
+          return _this.removeToolbars();
+        };
+      })(this));
       this.$el.addClass('dd_top_element');
+      this.addTools();
       return this.$el.sortable({
         items: ".dd_snippet",
         forcePlaceholderSize: true,
@@ -674,7 +693,7 @@
       });
     };
 
-    Snippets.prototype.addSnippet = function(event, ui) {
+    App.prototype.addSnippet = function(event, ui) {
       var index;
       index = this.$el.find('.dd_snippet').length;
       $(ui.helper).attr('id', "snippet_" + index);
@@ -684,11 +703,36 @@
       });
     };
 
-    Snippets.prototype.removeToolbars = function(e) {
+    App.prototype.removeToolbars = function(e) {
       return $(window.app.topElement).find('.dd_toolbar').remove();
     };
 
-    return Snippets;
+    App.prototype.addTools = function() {
+      this.$el.append("<div class='loader'><i class='fa fa-circle-o-notch fa-spin'></i></div>");
+      return this.$el.append("<div id='save_page_button'><i class='fa fa-save'></i> Save</div>");
+    };
+
+    App.prototype.savePage = function() {
+      var html;
+      this.startLoader();
+      html = this.$el.clone();
+      $(html).find('.loader, #save_page_button').remove();
+      return window.app.savePageCallback(html.html().replace(/(\r\n|\n|\r|\t)/gm, ""), (function(_this) {
+        return function() {
+          return _this.stopLoader();
+        };
+      })(this));
+    };
+
+    App.prototype.startLoader = function() {
+      return this.$el.find('.loader').show();
+    };
+
+    App.prototype.stopLoader = function() {
+      return this.$el.find('.loader').hide();
+    };
+
+    return App;
 
   })(Backbone.View);
 
@@ -719,6 +763,14 @@
           '792360': "Magenta Purple",
           'ac8b66': "Sand",
           '8b9291': "Paloma"
+        },
+        savePageCallback: function(html, callback) {
+          console.log(html);
+          return callback();
+        },
+        saveImageCallback: function(formdata, callback) {
+          console.log(formdata);
+          return callback('');
         }
       };
       settings = $.extend(settings, options);
@@ -741,16 +793,20 @@
     }
 
     App.prototype.initialize = function(options) {
-      this.templateName = options.settings.templateName;
+      this.snippetsPath = options.settings.snippetsPath;
       this.buttonClass = options.settings.buttonClass;
       this.buttonOptions = options.settings.buttonOptions;
       this.colorPalette = options.settings.colorPalette;
       this.mobile = options.settings.mobile;
+      this.savePageCallback = options.settings.savePageCallback;
+      this.saveImageCallback = options.settings.saveImageCallback;
       this.topElement = options.topElement;
-      this.topElement.addClass('dd_container');
+      if (this.mobile) {
+        $('body').addClass('mobile');
+      }
       return this.template = new DapperDoe.Models.Template({
         topElement: this.topElement,
-        name: this.templateName,
+        path: this.snippetsPath,
         callback: this.buildApp
       });
     };
@@ -767,9 +823,9 @@
     };
 
     App.prototype.initTopElement = function() {
-      return this.snippetsView = new DapperDoe.Views.Snippets({
+      return this.snippetsView = new DapperDoe.Views.App({
         el: this.topElement,
-        collection: new DapperDoe.Collections.Snippets()
+        collection: new DapperDoe.Collections.Snippets
       });
     };
 

@@ -10,7 +10,7 @@ class DapperDoe.Views.SnippetPreview extends Backbone.View
   buildSnippet: (index) ->
     this.$el = $("<div class='dd_snippet'></div>")
     this.$el.attr('id', "dd_snippet#{index}")
-    this.$el.append($("<img src='#{window.app.template.attributes.name}/#{this.model.attributes.previewUrl}' />"))
+    this.$el.append($("<img src='#{window.app.template.attributes.path}/#{this.model.attributes.previewUrl}' />"))
 
   enableDraggable: ->
     this.$el.draggable
@@ -20,6 +20,7 @@ class DapperDoe.Views.SnippetPreview extends Backbone.View
         connectToSortable: window.app.topElement
 
   addSnippet: (event, params) ->
+    console.log params.element
     params.element.find('img').remove()
     params.element.append $(this.model.attributes.html)
     new DapperDoe.Views.Snippet({model: this.model, el: params.element})
@@ -80,13 +81,16 @@ class DapperDoe.Views.Snippet extends Backbone.View
     if confirm("Are you sure you want to destroy this snippet?")
       this.$el.remove()
 
-class DapperDoe.Views.Snippets extends Backbone.View
+class DapperDoe.Views.App extends Backbone.View
 
   events:
     "click" : "removeToolbars"
+    "click #save_page_button" : "savePage"
 
   initialize: ->
+    $('body').bind('click', => this.removeToolbars())
     this.$el.addClass('dd_top_element')
+    this.addTools()
     this.$el.sortable
       items: ".dd_snippet"
       forcePlaceholderSize: true
@@ -102,3 +106,22 @@ class DapperDoe.Views.Snippets extends Backbone.View
 
   removeToolbars: (e) ->
     $(window.app.topElement).find('.dd_toolbar').remove()
+
+  addTools: ->
+    this.$el.append("<div class='loader'><i class='fa fa-circle-o-notch fa-spin'></i></div>")
+    this.$el.append("<div id='save_page_button'><i class='fa fa-save'></i> Save</div>")
+
+  savePage: ->
+    this.startLoader()
+    html = this.$el.clone()
+    $(html).find('.loader, #save_page_button').remove()
+    window.app.savePageCallback(html.html().replace(/(\r\n|\n|\r|\t)/gm,""), =>
+      this.stopLoader()
+    )
+
+  startLoader: ->
+    this.$el.find('.loader').show()
+
+  stopLoader: ->
+    this.$el.find('.loader').hide()
+

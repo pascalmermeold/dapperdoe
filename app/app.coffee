@@ -17,6 +17,12 @@ $.fn.extend
         '792360' : "Magenta Purple"
         'ac8b66' : "Sand"
         '8b9291' : "Paloma"
+      savePageCallback: (html, callback) ->
+        console.log(html)
+        callback()
+      saveImageCallback: (formdata, callback) ->
+        console.log(formdata)
+        callback('')
 
     settings = $.extend settings, options
 
@@ -30,19 +36,20 @@ $.fn.extend
 class DapperDoe.App extends Backbone.Model
 
   initialize: (options) ->
-    this.templateName = options.settings.templateName
+    this.snippetsPath = options.settings.snippetsPath
     this.buttonClass = options.settings.buttonClass
     this.buttonOptions = options.settings.buttonOptions
     this.colorPalette = options.settings.colorPalette
     this.mobile = options.settings.mobile
+    this.savePageCallback = options.settings.savePageCallback
+    this.saveImageCallback = options.settings.saveImageCallback
 
     this.topElement = options.topElement
-    this.topElement.addClass('dd_container')
-    #$('body').addClass('mobile') if this.mobile
+    $('body').addClass('mobile') if this.mobile
 
     this.template = new DapperDoe.Models.Template
       topElement: this.topElement
-      name: this.templateName
+      path: this.snippetsPath
       callback: this.buildApp
 
   buildApp: ->
@@ -54,6 +61,6 @@ class DapperDoe.App extends Backbone.Model
       collection: this.template.snippetsPreviews
 
   initTopElement: ->
-    this.snippetsView = new DapperDoe.Views.Snippets
+    this.snippetsView = new DapperDoe.Views.App
       el: this.topElement
-      collection: new DapperDoe.Collections.Snippets()
+      collection: new DapperDoe.Collections.Snippets

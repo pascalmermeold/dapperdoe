@@ -5,7 +5,7 @@ class DapperDoe.Models.Template extends Backbone.Model
 
   parseSnippets: (callback) ->
     $snippets = $('<div id="dd_snippets_loader"></div>')
-    $snippets.load("#{this.attributes.name}/snippets.html", =>
+    $snippets.load("#{this.attributes.path}/snippets.html", =>
       snippetsPreviews = new DapperDoe.Collections.SnippetsPreviews()
 
       $snippets.children().each ->

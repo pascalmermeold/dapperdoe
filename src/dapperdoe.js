@@ -1,10 +1,8 @@
-/*! Dapper Doe - v0.1.0 - 2014-12-16
+/*! Dapper Doe - v0.1.0 - 2015-01-06
 * https://github.com/pascalmerme/dapperdoe
-* Copyright (c) 2014 Pascal Merme; Licensed MIT */
+* Copyright (c) 2015 Pascal Merme; Licensed MIT */
 (function() {
-  var DapperDoe;
-
-  DapperDoe = {};
+  window.DapperDoe = {};
 
 }).call(this);
 
@@ -163,7 +161,7 @@
     };
 
     Snippet.prototype.addTools = function() {
-      return this.$el.append("<div class='tools'> <div class='tool snippet_mover'><i class='fa fa-arrows'></i></div> <div class='tool snippet_destroyer'><i class='fa fa-trash'></i></div> </div>");
+      return this.$el.append("<div class='tools dd_ui'> <div class='tool snippet_mover'><i class='fa fa-arrows'></i></div> <div class='tool snippet_destroyer'><i class='fa fa-trash'></i></div> </div>");
     };
 
     Snippet.prototype.parseSnippet = function() {
@@ -217,7 +215,7 @@
           return _this.removeToolbars();
         };
       })(this));
-      return this.$el.find("#save_page_button").bind("click", (function(_this) {
+      return $("#dd_save_page_button").bind("click", (function(_this) {
         return function() {
           return _this.savePage();
         };
@@ -225,8 +223,9 @@
     };
 
     AppView.prototype.addSnippet = function(event, ui) {
-      var index;
-      index = this.$el.find('.dd_snippet').length;
+      var index, randomnumber;
+      randomnumber = Math.ceil(Math.random() * 100000);
+      index = randomnumber = Math.ceil(Math.random() * 100000);
       $(ui.helper).attr('id', "snippet_" + index);
       $(ui.helper).removeAttr('style');
       return $(ui.item).trigger('addSnippet', {
@@ -239,8 +238,8 @@
     };
 
     AppView.prototype.addTools = function() {
-      this.$el.append("<div class='loader'><i class='fa fa-circle-o-notch fa-spin'></i></div>");
-      return this.$el.append("<div id='save_page_button'><i class='fa fa-save'></i> Save</div>");
+      $('body').append("<div class='dd_loader'><i class='fa fa-circle-o-notch fa-spin'></i></div>");
+      return $('body').append("<div id='dd_save_page_button'><i class='fa fa-save'></i> Save</div>");
     };
 
     AppView.prototype.parsePage = function() {
@@ -255,8 +254,13 @@
       var html;
       this.startLoader();
       html = this.$el.clone();
-      $(html).find('.loader, #save_page_button').remove();
-      return window.app.savePageCallback(html.html().replace(/(\r\n|\n|\r|\t)/gm, ""), (function(_this) {
+      $(html).find('.dd_ui').remove();
+      $(html).find('*[contenteditable=true]').removeAttr('contenteditable');
+      $(html).find('.dd_image_wrapper').each(function() {
+        $(this).find('img').appendTo($(this).parent());
+        return $(this).remove();
+      });
+      return window.app.savePageCallback(html.html().replace(/(\r\n|\n|\r|\t)/gm, "").replace(/<script>/gi, '').replace(/<\/script>/gi, ''), (function(_this) {
         return function() {
           return _this.stopLoader();
         };
@@ -264,11 +268,11 @@
     };
 
     AppView.prototype.startLoader = function() {
-      return this.$el.find('.loader').show();
+      return $('.dd_loader').show();
     };
 
     AppView.prototype.stopLoader = function() {
-      return this.$el.find('.loader').hide();
+      return $('.dd_loader').hide();
     };
 
     return AppView;
@@ -312,12 +316,44 @@
     function Text(options) {
       Text.__super__.constructor.call(this, options);
       this.$el.attr('contenteditable', 'true');
+      this.events();
+    }
+
+    Text.prototype.events = function() {
       this.$el.bind("focus", (function(_this) {
         return function() {
           return _this.showToolbar();
         };
       })(this));
-    }
+      this.$el.bind('paste', (function(_this) {
+        return function(e) {
+          return _this.handlePaste(e);
+        };
+      })(this));
+      return this.$el.bind('keydown', (function(_this) {
+        return function(e) {
+          return _this.handleBrInChrome(e);
+        };
+      })(this));
+    };
+
+    Text.prototype.handlePaste = function(e) {
+      var temp, text;
+      e.preventDefault();
+      text = (e.originalEvent || e).clipboardData.getData('text/plain') || prompt('Paste something..');
+      temp = document.createElement("div");
+      temp.innerHTML = text;
+      console.log(temp.textContent);
+      return document.execCommand('insertHtml', false, temp.textContent);
+    };
+
+    Text.prototype.handleBrInChrome = function(e) {
+      if (e.keyCode === 13) {
+        e.preventDefault();
+        e.stopPropagation();
+        return document.execCommand('insertHTML', false, '<br/><br/>');
+      }
+    };
 
     Text.prototype.showToolbar = function(e) {
       return this.toolbar = new DapperDoe.Toolbar.Text({
@@ -433,7 +469,7 @@
     };
 
     Image.prototype.html = function() {
-      return "<span class='dd_tools'> <!--<i class='image_link fa fa-link'></i><br/>--> <i class='image_upload fa fa-image'></i> <input type='file' class='image_input' style='display: none;'/> </span>";
+      return "<span class='dd_tools dd_ui'> <!--<i class='image_link fa fa-link'></i><br/>--> <i class='image_upload fa fa-image'></i> <input type='file' class='image_input' style='display: none;'/> </span>";
     };
 
     return Image;
@@ -499,7 +535,7 @@
     };
 
     Text.prototype.html = function() {
-      return $("<div class='dd_toolbar'> <button data-action='bold'><i class='fa fa-bold'></i></button> <button data-action='italic'><i class='fa fa-italic'></i></button> <button data-action='underline'><i class='fa fa-underline'></i></button> <button data-action='text-color'><i class='fa fa-paint-brush'></i></button> <button data-action='background-color'><i class='fa fa-tint'></i></button> <button data-action='align-left'><i class='fa fa-align-left'></i></button> <button data-action='align-center'><i class='fa fa-align-center'></i></button> <button data-action='align-right'><i class='fa fa-align-right'></i></button> <button data-action='link'><i class='fa fa-link'></i></button> <button data-action='unlink'><i class='fa fa-unlink'></i></button> <button data-action='list'><i class='fa fa-list-ul'></i></button> <button data-action='clear'><i class='fa fa-eraser'></i></button> <button data-action='undo'><i class='fa fa-undo'></i></button> </div>");
+      return $("<div class='dd_toolbar dd_ui'> <button data-action='bold'><i class='fa fa-bold'></i></button> <button data-action='italic'><i class='fa fa-italic'></i></button> <button data-action='underline'><i class='fa fa-underline'></i></button> <button data-action='text-color'><i class='fa fa-paint-brush'></i></button> <button data-action='background-color'><i class='fa fa-tint'></i></button> <button data-action='align-left'><i class='fa fa-align-left'></i></button> <button data-action='align-center'><i class='fa fa-align-center'></i></button> <button data-action='align-right'><i class='fa fa-align-right'></i></button> <button data-action='link'><i class='fa fa-link'></i></button> <button data-action='unlink'><i class='fa fa-unlink'></i></button> <button data-action='list'><i class='fa fa-list-ul'></i></button> <button data-action='clear'><i class='fa fa-eraser'></i></button> <button data-action='undo'><i class='fa fa-undo'></i></button> </div>");
     };
 
     Text.prototype.applyForeColor = function(color) {

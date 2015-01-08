@@ -6,13 +6,12 @@ class DapperDoe.Template
 
   parseSnippets: (callback) ->
     $snippets = $('<div id="dd_snippets_loader"></div>')
-    $snippets.load("#{this.attributes.path}/snippets.html", =>
+    $snippets.load("#{this.attributes.path}", =>
       snippetsPreviews = []
 
       $snippets.children().each ->
         snippetsPreviews.push
           previewUrl: $(this).data('preview')
-          type: $(this).data('type')
           html: $(this).html()
 
       this.snippetsPreviews = snippetsPreviews

@@ -12,7 +12,26 @@ class DapperDoe.Content.Text extends DapperDoe.Content
 	constructor: (options) ->
 		super(options)
 		this.$el.attr('contenteditable','true')
+		this.events()
+
+	events: ->
 		this.$el.bind("focus", => this.showToolbar())
+		this.$el.bind('paste', (e) => this.handlePaste(e))
+		this.$el.bind('keydown', (e) => this.handleBrInChrome(e))
+
+	handlePaste: (e) ->
+		e.preventDefault()
+		text = (e.originalEvent || e).clipboardData.getData('text/plain') || prompt('Paste something..')
+		temp = document.createElement("div")
+		temp.innerHTML = text
+		console.log(temp.textContent)
+		document.execCommand('insertHtml', false, temp.textContent)
+
+	handleBrInChrome: (e) ->
+		if e.keyCode == 13
+			e.preventDefault()
+			e.stopPropagation()
+			document.execCommand('insertHTML', false, '<br/><br/>')
 
 	showToolbar: (e) ->
 		this.toolbar = new DapperDoe.Toolbar.Text({content: this})
@@ -76,7 +95,7 @@ class DapperDoe.Tools.Image extends DapperDoe.Tools
 		this.$image.unwrap()
 
 	html: ->
-		"<span class='dd_tools'>
+		"<span class='dd_tools dd_ui'>
 			<!--<i class='image_link fa fa-link'></i><br/>-->
 			<i class='image_upload fa fa-image'></i>
 				<input type='file' class='image_input' style='display: none;'/>
@@ -116,7 +135,7 @@ class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 			when "undo" then document.execCommand('undo', false, null)
 
 	html: ->
-		$("<div class='dd_toolbar'>
+		$("<div class='dd_toolbar dd_ui'>
 			<button data-action='bold'><i class='fa fa-bold'></i></button>
 			<button data-action='italic'><i class='fa fa-italic'></i></button>
 			<button data-action='underline'><i class='fa fa-underline'></i></button>

@@ -73,7 +73,7 @@ class DapperDoe.Snippet
     this.$el.find('.tool').hide()
 
   addTools: ->
-    this.$el.append("<div class='tools'>
+    this.$el.append("<div class='tools dd_ui'>
       <div class='tool snippet_mover'><i class='fa fa-arrows'></i></div>
       <div class='tool snippet_destroyer'><i class='fa fa-trash'></i></div>
     </div>")
@@ -104,10 +104,11 @@ class DapperDoe.AppView
   events: ->
     $('body').bind('click', => this.removeToolbars())
     this.$el.bind("click", => this.removeToolbars())
-    this.$el.find("#save_page_button").bind("click", => this.savePage())
+    $("#dd_save_page_button").bind("click", => this.savePage())
 
   addSnippet: (event, ui) =>
-    index = this.$el.find('.dd_snippet').length
+    randomnumber = Math.ceil(Math.random()*100000)
+    index = randomnumber = Math.ceil(Math.random()*100000)
     $(ui.helper).attr('id',"snippet_#{index}")
     $(ui.helper).removeAttr('style')
     $(ui.item).trigger('addSnippet', {element: $("#snippet_#{index}")})
@@ -116,8 +117,8 @@ class DapperDoe.AppView
     $(window.app.topElement).find('.dd_toolbar').remove()
 
   addTools: ->
-    this.$el.append("<div class='loader'><i class='fa fa-circle-o-notch fa-spin'></i></div>")
-    this.$el.append("<div id='save_page_button'><i class='fa fa-save'></i> Save</div>")
+    $('body').append("<div class='dd_loader'><i class='fa fa-circle-o-notch fa-spin'></i></div>")
+    $('body').append("<div id='dd_save_page_button'><i class='fa fa-save'></i> Save</div>")
 
   parsePage: ->
     this.$el.find('.dd_snippet').each (index, snippet) ->
@@ -126,14 +127,18 @@ class DapperDoe.AppView
   savePage: ->
     this.startLoader()
     html = this.$el.clone()
-    $(html).find('.loader, #save_page_button').remove()
-    window.app.savePageCallback(html.html().replace(/(\r\n|\n|\r|\t)/gm,""), =>
+    $(html).find('.dd_ui').remove()
+    $(html).find('*[contenteditable=true]').removeAttr('contenteditable')
+    $(html).find('.dd_image_wrapper').each ->
+      $(this).find('img').appendTo($(this).parent())
+      $(this).remove()
+    window.app.savePageCallback(html.html().replace(/(\r\n|\n|\r|\t)/gm,"").replace(/<script>/gi,'').replace(/<\/script>/gi,''), =>
       this.stopLoader()
     )
 
   startLoader: ->
-    this.$el.find('.loader').show()
+    $('.dd_loader').show()
 
   stopLoader: ->
-    this.$el.find('.loader').hide()
+    $('.dd_loader').hide()
 

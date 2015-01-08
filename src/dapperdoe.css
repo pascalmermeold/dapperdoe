@@ -6,7 +6,7 @@
   top: 0;
   right: -286px;
   padding: 15px;
-  z-index: 10;
+  z-index: 100;
 }
 #dd_sidebar .dd_snippets_previews {
   overflow-y: auto;
@@ -65,7 +65,7 @@
   height: 100%;
   top: 0;
   left: 0;
-  z-index: 20;
+  z-index: 200;
   display: -webkit-box;
   display: -moz-box;
   display: -ms-flexbox;
@@ -133,18 +133,21 @@
   margin: 3px;
   cursor: pointer;
 }
-.dd_top_element {
-  width: 100%;
-  min-height: 500px;
-  border: dashed 1px #ddd;
-  position: relative;
+#dd_save_page_button {
+  position: fixed;
+  z-index: 99;
+  top: 0;
+  right: 50px;
+  background: #333;
+  padding: 4px 12px;
+  font-size: 20px;
+  border-radius: 0 0 3px 3px;
+  color: #fff;
+  cursor: pointer;
 }
-.dd_top_element [contenteditable]:focus {
-  outline: 0px solid transparent;
-}
-.dd_top_element .loader {
+.dd_loader {
   display: none;
-  z-index: 11000;
+  z-index: 300;
   font-size: 36px;
   line-height: 36px;
   width: 36px;
@@ -156,17 +159,13 @@
   margin-left: -18px;
   border-radius: 2px;
 }
-.dd_top_element #save_page_button {
-  position: absolute;
-  z-index: 5;
-  top: 0;
-  right: 50px;
-  background: #333;
-  padding: 2px 8px;
-  font-size: 18px;
-  border-radius: 0 0 3px 3px;
-  color: #fff;
-  cursor: pointer;
+.dd_top_element {
+  width: 100%;
+  min-height: 500px;
+  position: relative;
+}
+.dd_top_element [contenteditable]:focus {
+  outline: 0px solid transparent;
 }
 .dd_top_element .dd_snippet:hover {
   box-shadow: 0 0 100px 100px rgba(100, 100, 100, 0.1) inset;

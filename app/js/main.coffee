@@ -1,1 +1,1 @@
-DapperDoe = {}
+window.DapperDoe = {}

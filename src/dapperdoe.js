@@ -1,4 +1,4 @@
-/*! Dapper Doe - v0.1.0 - 2015-01-06
+/*! Dapper Doe - v0.1.0 - 2015-01-12
 * https://github.com/pascalmerme/dapperdoe
 * Copyright (c) 2015 Pascal Merme; Licensed MIT */
 (function() {
@@ -16,14 +16,13 @@
     Template.prototype.parseSnippets = function(callback) {
       var $snippets;
       $snippets = $('<div id="dd_snippets_loader"></div>');
-      return $snippets.load("" + this.attributes.path + "/snippets.html", (function(_this) {
+      return $snippets.load("" + this.attributes.path, (function(_this) {
         return function() {
           var snippetsPreviews;
           snippetsPreviews = [];
           $snippets.children().each(function() {
             return snippetsPreviews.push({
               previewUrl: $(this).data('preview'),
-              type: $(this).data('type'),
               html: $(this).html()
             });
           });
@@ -62,7 +61,7 @@
     SnippetPreview.prototype.buildSnippet = function() {
       this.$el = $("<div class='dd_snippet'></div>");
       this.$el.attr('id', "dd_snippet" + this.index);
-      return this.$el.append($("<img src='" + window.app.template.attributes.path + "/" + this.snippet.previewUrl + "' />"));
+      return this.$el.append($("<img src='" + this.snippet.previewUrl + "' />"));
     };
 
     SnippetPreview.prototype.enableDraggable = function() {
@@ -310,6 +309,13 @@
 
   })();
 
+  DapperDoe.Tools = (function() {
+    function Tools() {}
+
+    return Tools;
+
+  })();
+
   DapperDoe.Content.Text = (function(_super) {
     __extends(Text, _super);
 
@@ -378,13 +384,6 @@
     return Image;
 
   })(DapperDoe.Content);
-
-  DapperDoe.Tools = (function() {
-    function Tools() {}
-
-    return Tools;
-
-  })();
 
   DapperDoe.Tools.Image = (function(_super) {
     __extends(Image, _super);
@@ -566,20 +565,23 @@
         };
       })(this));
       this.$el.find(".dd_submit_modal").bind("click", (function(_this) {
-        return function() {
-          return _this.doAction();
+        return function(e) {
+          return _this.doAction(e);
         };
       })(this));
       return this.$el.find(".dd_close_modal").bind("click", (function(_this) {
-        return function() {
-          return _this.closeModal();
+        return function(e) {
+          return _this.closeModal(e);
         };
       })(this));
     };
 
-    Modal.prototype.doAction = function() {};
+    Modal.prototype.doAction = function(e) {
+      return e.stopPropagation();
+    };
 
-    Modal.prototype.closeModal = function() {
+    Modal.prototype.closeModal = function(e) {
+      e.stopPropagation();
       return this.$el.remove();
     };
 
@@ -606,6 +608,7 @@
     }
 
     Color.prototype.events = function() {
+      Color.__super__.events.call(this);
       return this.$el.find(".color").bind("click", (function(_this) {
         return function(e) {
           return _this.doAction(e);
@@ -613,11 +616,16 @@
       })(this));
     };
 
+    Color.prototype.stopPropagation = function(e) {
+      return e.stopPropagation();
+    };
+
     Color.prototype.doAction = function(e) {
       var color;
+      e.stopPropagation();
       color = $(e.target).data('color');
       this.callback(color);
-      return this.closeModal();
+      return this.closeModal(e);
     };
 
     Color.prototype.colorLuminance = function(hex, lum) {
@@ -663,8 +671,9 @@
       Url.__super__.constructor.call(this, options);
     }
 
-    Url.prototype.doAction = function() {
+    Url.prototype.doAction = function(e) {
       var cssApplier, cssClass, key, option, _ref;
+      e.stopPropagation();
       this.url = this.$el.find('.dd_url').val();
       this.blank = this.$el.find('.dd_blank').is(':checked');
       this.button = this.$el.find('.dd_button').is(':checked');
@@ -686,7 +695,7 @@
         });
         cssApplier.toggleSelection();
       }
-      return this.closeModal();
+      return this.closeModal(e);
     };
 
     Url.prototype.html = function() {
@@ -742,7 +751,7 @@
         },
         saveImageCallback: function(formdata, callback) {
           console.log(formdata);
-          return callback('');
+          return callback(false);
         }
       };
       settings = $.extend(settings, options);
@@ -763,13 +772,9 @@
       this.buttonClass = options.settings.buttonClass;
       this.buttonOptions = options.settings.buttonOptions;
       this.colorPalette = options.settings.colorPalette;
-      this.mobile = options.settings.mobile;
       this.savePageCallback = options.settings.savePageCallback;
       this.saveImageCallback = options.settings.saveImageCallback;
       this.topElement = options.topElement;
-      if (this.mobile) {
-        $('body').addClass('mobile');
-      }
       this.template = new DapperDoe.Template({
         topElement: this.topElement,
         path: this.snippetsPath,

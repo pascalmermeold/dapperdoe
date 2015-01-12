@@ -1,13 +1,28 @@
+# Content.js
+# ----------
+# Defines how contents can be edited
+# Creates relative UI and behaviour
+# Type of content that can currently be edited :
+#  * Text (<h1>, <h2>, <h3>, <h4>, <h5>, <h6>, <p>)
+#  * Image (<img>)
+# ----------
+
+# Generic class for contents (for example, a <h1> or <img> tag)
 class DapperDoe.Content
 	constructor: (options) ->
 		this.$el = options.el
 		this.$el.bind('click', (e) -> e.stopPropagation())
 
+# Generic class for toolbars
 class DapperDoe.Toolbar
 	constructor: (options) ->
 		this.$el = $('<div></div>')
 		this.$el.bind('click', (e) -> e.stopPropagation())
 
+# Generic class for tools (UI on contents)
+class DapperDoe.Tools
+
+# Text content, called on <h*> and <p>
 class DapperDoe.Content.Text extends DapperDoe.Content
 	constructor: (options) ->
 		super(options)
@@ -19,6 +34,7 @@ class DapperDoe.Content.Text extends DapperDoe.Content
 		this.$el.bind('paste', (e) => this.handlePaste(e))
 		this.$el.bind('keydown', (e) => this.handleBrInChrome(e))
 
+	# Removes all tags when pasting to prevent bugs due to unexpected tags from other softwares and apps
 	handlePaste: (e) ->
 		e.preventDefault()
 		text = (e.originalEvent || e).clipboardData.getData('text/plain') || prompt('Paste something..')
@@ -27,6 +43,7 @@ class DapperDoe.Content.Text extends DapperDoe.Content
 		console.log(temp.textContent)
 		document.execCommand('insertHtml', false, temp.textContent)
 
+	# Handle breaklines in Chrome by inserting <br> tags instead of <div>
 	handleBrInChrome: (e) ->
 		if e.keyCode == 13
 			e.preventDefault()
@@ -36,16 +53,14 @@ class DapperDoe.Content.Text extends DapperDoe.Content
 	showToolbar: (e) ->
 		this.toolbar = new DapperDoe.Toolbar.Text({content: this})
 
+# Image content called on <img>
 class DapperDoe.Content.Image extends DapperDoe.Content
-
 	constructor: (options) ->
 		super(options)
 		this.tools = new DapperDoe.Tools.Image({image: this.$el})
 
-class DapperDoe.Tools
-
+# UI for editing images
 class DapperDoe.Tools.Image extends DapperDoe.Tools
-
 	constructor: (options) ->
 		this.$image = options.image
 		this.$image.wrap('<div class="dd_image_wrapper"></div>')
@@ -65,6 +80,7 @@ class DapperDoe.Tools.Image extends DapperDoe.Tools
 	selectFile: ->
 		this.$tools.find(".image_input").trigger("click")
 
+	# Manage image upload and calls the callback provided
 	uploadImage: (e) =>
 		if e.target.files and e.target.files[0]
 			file = e.target.files[0]
@@ -86,6 +102,7 @@ class DapperDoe.Tools.Image extends DapperDoe.Tools
 			else
 				alert('Type de fichier non autorisé')
 
+	# Position buttons at the center of the image
 	positionTools: ->
 		this.$tools.css('left',(this.$image.width()/2)-(this.$el.find('.dd_tools').width()/2))
 		this.$tools.css('top',(this.$image.height()/2)-(this.$el.find('.dd_tools').height()/2))
@@ -94,6 +111,7 @@ class DapperDoe.Tools.Image extends DapperDoe.Tools
 		this.$image.parent('.dd_image_wrapper').find('div').remove()
 		this.$image.unwrap()
 
+	# UI's DOM
 	html: ->
 		"<span class='dd_tools dd_ui'>
 			<!--<i class='image_link fa fa-link'></i><br/>-->
@@ -101,6 +119,7 @@ class DapperDoe.Tools.Image extends DapperDoe.Tools
 				<input type='file' class='image_input' style='display: none;'/>
 		</span>"
 
+# UI for editing texts
 class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 
 	constructor: (options) ->
@@ -114,6 +133,7 @@ class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 	events: ->
 		this.$el.find("button").bind("click", (e) => this.editText(e))
 
+	# Commands called when clicking on a toolbar button
 	editText: (e) =>
 		window.app.lastSel = rangy.saveSelection()
 
@@ -134,6 +154,7 @@ class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 				document.execCommand('unlink', false, null)
 			when "undo" then document.execCommand('undo', false, null)
 
+	# UI's DOM
 	html: ->
 		$("<div class='dd_toolbar dd_ui'>
 			<button data-action='bold'><i class='fa fa-bold'></i></button>
@@ -159,8 +180,8 @@ class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 		rangy.restoreSelection(app.lastSel)
 		document.execCommand('hiliteColor', false, color)
 
+# Generic class for modals (used for links and colors for example)
 class DapperDoe.Modal
-
 	constructor: (options) ->
 		this.$el = this.html()
 		$(window.app.topElement).append(this.$el)
@@ -168,12 +189,14 @@ class DapperDoe.Modal
 
 	events: ->
 		this.$el.bind("click", (e) => this.stopPropagation(e))
-		this.$el.find(".dd_submit_modal").bind("click", => this.doAction())
-		this.$el.find(".dd_close_modal").bind("click", => this.closeModal())
+		this.$el.find(".dd_submit_modal").bind("click", (e) => this.doAction(e))
+		this.$el.find(".dd_close_modal").bind("click", (e) => this.closeModal(e))
 
-	doAction: ->
+	doAction: (e) ->
+		e.stopPropagation()
 
-	closeModal: ->
+	closeModal: (e) ->
+		e.stopPropagation()
 		this.$el.remove()
 
 	stopPropagation: (e) ->
@@ -188,7 +211,7 @@ class DapperDoe.Modal
 			</div>
 		</div>")
 
-
+# Color modal, allowing to choose a color from the palette and execute a callback with the choosen color
 class DapperDoe.Modal.Color extends DapperDoe.Modal
 
 	constructor: (options)->
@@ -197,12 +220,17 @@ class DapperDoe.Modal.Color extends DapperDoe.Modal
 		this.events()
 
 	events: ->
+		super()
 		this.$el.find(".color").bind("click", (e) => this.doAction(e))
 
+	stopPropagation: (e) ->
+		e.stopPropagation()
+
 	doAction: (e) ->
+		e.stopPropagation()
 		color = $(e.target).data('color')
 		this.callback(color)
-		this.closeModal()
+		this.closeModal(e)
 
 	colorLuminance: (hex, lum) ->
 		hex = String(hex).replace(/[^0-9a-f]/gi, '')
@@ -229,12 +257,15 @@ class DapperDoe.Modal.Color extends DapperDoe.Modal
 
 		return $html
 
+# Url modal, allowing to add a link, and optionnaly button classes to the link.
+# Adds the link to the currently selected text
 class DapperDoe.Modal.Url extends DapperDoe.Modal
 
 	constructor: (options) ->
 		super(options)
 
-	doAction: ->
+	doAction: (e) ->
+		e.stopPropagation()
 		this.url = this.$el.find('.dd_url').val()
 		this.blank = this.$el.find('.dd_blank').is(':checked')
 		this.button = this.$el.find('.dd_button').is(':checked')
@@ -254,7 +285,7 @@ class DapperDoe.Modal.Url extends DapperDoe.Modal
 				elementTagName: 'a')
 			cssApplier.toggleSelection()
 
-		this.closeModal()
+		this.closeModal(e)
 
 	html: ->
 		$html = super()

@@ -1,12 +1,8 @@
 #Dapper Doe
 
-Dapper Doe is a static web page generator/editor that makes any html template drag-and-drop editable. It is perfect for allowing people who are not familiar with html to create et edit nice and beautiful webpage. You can use Dapper Doe in your application or as a mini-CMS for simple static websites.
+Dapper Doe is a static web page generator/editor that makes any html template drag-and-drop editable. It is perfect for allowing people who are not familiar with html to create and edit nice and beautiful webpage. You can use Dapper Doe in your application or as a mini-CMS for simple static websites.
 
-This project is starting and only the most basic features are there, so if you are interested in contributing, let me know!
-
-##How it works
-
-Dapper Doe is a jQuery plugin that parses any html page and makes it easily editable. You must provide the plugin with a template that allows end-users to add new contents to their page. Currently, text and image elements are editable, but there's more to come.
+This project is starting and only the most basic features are ready, so if you need something more, I'll be glad you contribute!
 
 ## Intro
 
@@ -18,11 +14,13 @@ The contents of snippets can be edited by clicking on them. Currently, `<h1>`, `
 
 ## Getting Started
 
-Here is an example project based on Twitter Bootstrap. Download it if you want to better understand how to make DapperDoe work! : gfdfgdfggf
+Here is an example project based on Twitter Bootstrap: . Download it and check `snippets.html` and `script.js` files to better understand how to make DapperDoe work.
+
+**Dapper Doe will only work on a server as it uses ajax to load contents, so use a local static file server to do you tests**
 
 ####Include Dapper Doe js and css files
 
-Dapper Doe depends on jQuery and jQuery UI, so you need to add them too.
+Dapper Doe depends on jQuery and jQuery UI, so you need to add them. The, you can add Dapper Doe stylesheet and script.
 
 	<link href="dapperdoe/dist/dapperdoe.min.css" rel="stylesheet">
 	
@@ -32,9 +30,9 @@ Dapper Doe depends on jQuery and jQuery UI, so you need to add them too.
 	
 ####Create snippets
 
-DapperDoe needs to know which are the snippets that can be added and dragged. Create an html file called `snippets.html` listing all the html snippets you want to add to the editor.
+DapperDoe needs to know which are the snippets that can be added and dragged. Create an html file listing all the html snippets you want to add to the editor.
 
-Take a look at the file called snippets.html in the example project. As you can see, a snippet in snippets.html looks like this :
+Take a look at the file called `/bootstrap/snippets.html` in the example project. As you can see, a snippet looks like this :
 
 	<div data-preview="snippets/jumbotron.png">
 		<div class="jumbotron">
@@ -46,7 +44,7 @@ Take a look at the file called snippets.html in the example project. As you can 
     	</div>
 	</div>
 
-Add the attribute "data-preview" to make DapperDoe aware that this snippet must be added in the sidebar. The value of `data-preview` is the path to the snippet's image preview.
+You just need to add the attribute "data-preview" to make DapperDoe aware that this snippet must be added in the sidebar. The value of `data-preview` is the path to the snippet's image preview that will appear in the sidebar (typically a screenshot of the result).
 	
 ####Call DapperDoe
 
@@ -66,11 +64,11 @@ Call `dapperDoe()` on the element that serves as container for the snippets. Thr
 	
 You need to call `callback()` once the page has been saved in `savePageCallback()` to inform DapperDoe the request is finished.
 
-You need to call `callback(savedImageUrl)` once an image has been saved in `saveImageCallback()` to let know DapperDoe the url to use for the image.
+You need to call `callback(savedImageUrl)` once an image has been saved in `saveImageCallback()` to let know DapperDoe the url of the image.
 	
 ####That's it!
 
-Just load your page and you will seethe DapperDoe magic appear!
+Just load your page and you'll see DapperDoe magic happen!
 
 ## Options
 
@@ -121,3 +119,11 @@ The default class used for buttons is `.btn`. You can customize this class with 
 		},
 		...
 	});
+
+## Contributing
+
+All the code is in the /app folder. It's only 1 less file and 4 coffee script files. There is a Gruntfile that will automatically compile the app in /src (non minified) and /dist (minified).
+
+DapperDoe depends on jQuery, jQuery UI but also Rangy. Because Rangy is light, stable and tedious to add to every project, it is added in the compiled source.
+
+If there is something you don't understand, don't hesitate to contact me!

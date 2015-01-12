@@ -39,6 +39,9 @@ module.exports = function(grunt) {
       },
     },
     less: {
+      options: {
+        banner: '<%= banner %>'
+      },
       development: {
         files: {
           "src/dapperdoe.css": "app/css/dapperdoe.less"

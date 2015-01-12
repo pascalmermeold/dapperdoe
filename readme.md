@@ -6,7 +6,7 @@ This project is starting and only the most basic features are ready, so if you n
 
 ## Intro
 
-**First of all, test Dapper Doe here in order to better understand the rest of this readme : <a href="http://www.lafactoria.fr/dapperdoe/" target="_blank">http://www.lafactoria.fr/dapperdoe/</a>.**
+**First of all, test Dapper Doe here in order to better understand the rest of this readme : <a href="http://www.lafactoria.fr/dapperdoe/" target="_blank">www.lafactoria.fr/dapperdoe</a>.**
 
 Dapper Doe is based on snippets. A snippet is a chunk of html code that represents an editable and addable block of content. Snippets are available on the right sidebar of the editor and can be dragged into the page. 
 

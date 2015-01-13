@@ -6,7 +6,7 @@ This project is starting and only the most basic features are ready, so if you n
 
 ## Intro / Demo
 
-**First of all, test Dapper Doe here in order to better understand the rest of this readme. **
+*First of all, test Dapper Doe with the demo in order to better understand the rest of this readme.*
 
 **Demo : <a href="http://www.lafactoria.fr/dapperdoe/" target="_blank">www.lafactoria.fr/dapperdoe</a>**
 
@@ -46,7 +46,7 @@ Take a look at the file called `/bootstrap/snippets.html` in the example project
     	</div>
 	</div>
 
-You just need to add the attribute "data-preview" to make DapperDoe aware that this snippet must be added in the sidebar. The value of `data-preview` is the path to the snippet's image preview that will appear in the sidebar (typically a screenshot of the result).
+You just need to add the attribute "data-preview" to make DapperDoe aware that this snippet must be added in the sidebar. The value of `data-preview` is the path to the snippet's image preview that will appear in the sidebar (typically a screenshot of the result, you can check the png files in `/bootstrap/snippets/` to see an example).
 	
 ####Call DapperDoe
 

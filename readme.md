@@ -22,13 +22,14 @@ Here is an example project based on Twitter Bootstrap: <a href="http://www.lafac
 
 ####Include Dapper Doe js and css files
 
-Dapper Doe depends on jQuery and jQuery UI, so you need to add them. The, you can add Dapper Doe stylesheet and script.
-
+Dapper Doe depends on jQuery and jQuery UI, so you need to add them. It also depends on Font Awesome v4.2.
+	
+	<link href="dapperdoe/libs/css/font-awesome.css" rel="stylesheet">
 	<link href="dapperdoe/dist/dapperdoe.min.css" rel="stylesheet">
 	
 	<script src="dapperdoe/libs/jquery/jquery.min.js"></script>
     <script src="dapperdoe/libs/jquery/jquery-ui.min.js"></script>
-	<script src="dapperdoe/src/dapperdoe.js"></script>
+	<script src="dapperdoe/dist/dapperdoe.min.js"></script>
 	
 ####Create snippets
 

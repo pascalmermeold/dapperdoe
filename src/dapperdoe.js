@@ -1,4 +1,4 @@
-/*! Dapper Doe - v0.1.0 - 2015-01-12
+/*! Dapper Doe - v0.1.0 - 2015-01-21
 * https://github.com/pascalmerme/dapperdoe
 * Copyright (c) 2015 Pascal Merme; Licensed MIT */
 (function() {
@@ -144,9 +144,14 @@
           return _this.hideTools();
         };
       })(this));
-      return this.$el.find(".snippet_destroyer").bind("click", (function(_this) {
+      this.$el.find(".snippet_destroyer").bind("click", (function(_this) {
         return function() {
           return _this.destroy();
+        };
+      })(this));
+      return this.$el.find(".snippet_settings").bind("click", (function(_this) {
+        return function() {
+          return _this.settings();
         };
       })(this));
     };
@@ -160,7 +165,11 @@
     };
 
     Snippet.prototype.addTools = function() {
-      return this.$el.append("<div class='tools dd_ui'> <div class='tool snippet_mover'><i class='fa fa-arrows'></i></div> <div class='tool snippet_destroyer'><i class='fa fa-trash'></i></div> </div>");
+      return this.$el.append("<div class='tools dd_ui'> <div class='tool snippet_mover'><i class='fa fa-arrows'></i></div> <div class='tool snippet_destroyer'><i class='fa fa-trash'></i></div> <div class='tool snippet_settings'><i class='fa fa-adjust'></i></div> </div>");
+    };
+
+    Snippet.prototype.settings = function() {
+      return console.log('fuck');
     };
 
     Snippet.prototype.parseSnippet = function() {

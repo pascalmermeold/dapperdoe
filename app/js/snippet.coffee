@@ -79,6 +79,7 @@ class DapperDoe.Snippet
     this.$el.bind("mouseover", => this.showTools())
     this.$el.bind("mouseleave", => this.hideTools())
     this.$el.find(".snippet_destroyer").bind("click", => this.destroy())
+    this.$el.find(".snippet_settings").bind("click", => this.settings())
 
   showTools: ->
     this.$el.find('.tool').show()
@@ -91,7 +92,11 @@ class DapperDoe.Snippet
     this.$el.append("<div class='tools dd_ui'>
       <div class='tool snippet_mover'><i class='fa fa-arrows'></i></div>
       <div class='tool snippet_destroyer'><i class='fa fa-trash'></i></div>
+      <div class='tool snippet_settings'><i class='fa fa-adjust'></i></div>
     </div>")
+
+  settings: ->
+    console.log('fuck')
 
   # Makes snippet's content editable by creating new content objects
   parseSnippet: ->

@@ -51,7 +51,7 @@ module.exports = function(grunt) {
     cssmin: {
       combine: {
         files: {
-          'dist/dapperdoe.min.css': ['src/dapperdoe.css', 'app/css/font-awesome.css']
+          'dist/dapperdoe.min.css': ['src/dapperdoe.css']
         }
       }
     },

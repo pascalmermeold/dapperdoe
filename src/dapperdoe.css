@@ -62,6 +62,58 @@ body {
   font-size: 18px;
   color: #fff;
 }
+.dd_toolbar button.active i {
+  color: #999;
+}
+.dd_toolbar .dd_sub_toolbar .dd_toolbar_color tr {
+  float: left;
+  width: 18px;
+}
+.dd_toolbar .dd_sub_toolbar .dd_toolbar_color tr td.color {
+  width: 16px;
+  height: 16px;
+  display: inline-block;
+  border-radius: 16px;
+  margin: 2px;
+  cursor: pointer;
+}
+.dd_toolbar .dd_sub_toolbar .dd_toolbar_color span.color {
+  display: inline-block;
+  border-radius: 300px;
+  margin: 2px;
+  cursor: pointer;
+}
+.dd_toolbar .dd_sub_toolbar .dd_toolbar_url {
+  padding: 2%;
+  color: #fff;
+}
+.dd_toolbar .dd_sub_toolbar .dd_toolbar_url .dd_url {
+  width: 91%;
+  float: left;
+  color: #333;
+  border: none;
+  border-radius: 3px;
+  padding: 3px 6px;
+  height: 28px;
+  outline: none;
+}
+.dd_toolbar .dd_sub_toolbar .dd_toolbar_url .dd_submit {
+  width: 5%;
+  float: right;
+  font-size: 20px;
+}
+.dd_toolbar .dd_sub_toolbar .dd_toolbar_url .dd_url_options {
+  width: 96%;
+  float: left;
+  text-align: left;
+}
+.dd_toolbar .dd_sub_toolbar .dd_toolbar_url .dd_url_options label {
+  display: inline-block;
+  margin: 2px 5px 0 0;
+}
+.dd_toolbar .dd_sub_toolbar .dd_toolbar_url .clearfix {
+  clear: both;
+}
 .dd_toolbar:after {
   top: 100%;
   left: 50%;
@@ -137,18 +189,6 @@ body {
   color: #fff;
   border-radius: 2px;
   padding: 3px 8px;
-  cursor: pointer;
-}
-.dd_modal_overlay .dd_modal .dd_content .dd_color_palette tr {
-  float: left;
-  width: 46px;
-}
-.dd_modal_overlay .dd_modal .dd_content .dd_color_palette tr td.color {
-  width: 40px;
-  height: 40px;
-  display: inline-block;
-  border-radius: 40px;
-  margin: 3px;
   cursor: pointer;
 }
 #dd_save_page_button {

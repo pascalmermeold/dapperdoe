@@ -335,6 +335,8 @@
       this.events();
       if ((this.$el.is('p, div, blockquote')) && (this.$el.children().length === 0)) {
         this.$el.wrapInner('<p></p>');
+      } else if ((this.$el.is('h1, h2, h3, h4, h5, h6')) && (this.$el.children().length === 0)) {
+        this.$el.wrapInner('<div></div>');
       }
     }
 
@@ -503,7 +505,13 @@
     };
 
     Text.prototype.hide = function() {
-      return this.$el.hide();
+      this.$el.hide();
+      return this.hideSubToolbar();
+    };
+
+    Text.prototype.hideSubToolbar = function() {
+      window.app.textSubToolbarColor.hide();
+      return window.app.textSubToolbarUrl.hide();
     };
 
     Text.prototype.show = function() {
@@ -511,24 +519,26 @@
       this.$el.hide();
       boundary = rangy.getSelection().getRangeAt(0).getBoundingClientRect();
       if (boundary.bottom > 0) {
-        top = boundary.top - this.toolbarHeight - 10;
+        top = boundary.top - 10;
         left = boundary.left + (boundary.width / 2) - (this.toolbarWidth / 2);
         if (left < 10) {
           left = 10;
         }
-        if ((left + this.toolbarWidth) > ($(document).width() - 10)) {
-          left = $(document).width() - 10 - this.toolbarWidth;
+        if ((left + this.toolbarWidth) > ($(window).width() - 10)) {
+          left = $(window).width() - 10 - this.toolbarWidth;
         }
-        this.$el.find('.dd_toolbar').css('top', top);
+        this.$el.find('.dd_toolbar').css('bottom', $(window).height() - top);
         this.$el.find('.dd_toolbar').css('left', left);
-        this.$el.find('.dd_toolbar:after').css('left', 0);
         return this.$el.show();
       }
     };
 
     Text.prototype.editText = function(e) {
+      var action;
       window.app.lastSel = rangy.saveSelection();
-      switch ($(e.currentTarget).data('action')) {
+      action = $(e.currentTarget).data('action');
+      this.hideSubToolbar();
+      switch (action) {
         case "bold":
           document.execCommand('bold', false, null);
           break;
@@ -539,14 +549,7 @@
           document.execCommand('underline', false, null);
           break;
         case "text-color":
-          new DapperDoe.Modal.Color({
-            callback: this.applyForeColor
-          });
-          break;
-        case "background-color":
-          new DapperDoe.Modal.Color({
-            callback: this.applyHiliteColor
-          });
+          window.app.textSubToolbarColor.show(this.applyForeColor);
           break;
         case "align-left":
           document.execCommand('justifyLeft', false, null);
@@ -558,7 +561,7 @@
           document.execCommand('justifyRight', false, null);
           break;
         case "link":
-          new DapperDoe.Modal.Url();
+          window.app.textSubToolbarUrl.show();
           break;
         case "unlink":
           document.execCommand('unlink', false, null);
@@ -574,7 +577,7 @@
     };
 
     Text.prototype.html = function() {
-      return $("<div class='dd_toolbar dd_ui'> <button data-action='bold'><i class='fa fa-bold'></i></button> <button data-action='italic'><i class='fa fa-italic'></i></button> <button data-action='underline'><i class='fa fa-underline'></i></button> <button data-action='text-color'><i class='fa fa-tint'></i></button> <button data-action='align-left'><i class='fa fa-align-left'></i></button> <button data-action='align-center'><i class='fa fa-align-center'></i></button> <button data-action='align-right'><i class='fa fa-align-right'></i></button> <button data-action='link'><i class='fa fa-link'></i></button> <button data-action='unlink'><i class='fa fa-unlink'></i></button> <button data-action='clear'><i class='fa fa-eraser'></i></button> <button data-action='undo'><i class='fa fa-undo'></i></button> </div>");
+      return $("<div class='dd_toolbar dd_ui'> <div class='dd_sub_toolbar'></div> <button data-action='bold'><i class='fa fa-bold'></i></button> <button data-action='italic'><i class='fa fa-italic'></i></button> <button data-action='underline'><i class='fa fa-underline'></i></button> <button data-action='text-color'><i class='fa fa-tint'></i></button> <button data-action='align-left'><i class='fa fa-align-left'></i></button> <button data-action='align-center'><i class='fa fa-align-center'></i></button> <button data-action='align-right'><i class='fa fa-align-right'></i></button> <button data-action='link'><i class='fa fa-link'></i></button> <button data-action='unlink'><i class='fa fa-unlink'></i></button> <button data-action='clear'><i class='fa fa-eraser'></i></button> <button data-action='undo'><i class='fa fa-undo'></i></button> </div>");
     };
 
     Text.prototype.applyForeColor = function(color) {
@@ -586,9 +589,167 @@
 
   })(DapperDoe.Toolbar);
 
+  DapperDoe.TextSubToolbar = (function() {
+    function TextSubToolbar(options) {
+      this.$el = window.app.textToolbar.$el.find('.dd_sub_toolbar');
+      this.$el.hide();
+      this.$el.append(this.html());
+      this.events();
+    }
+
+    TextSubToolbar.prototype.events = function() {
+      this.$el.bind("click", (function(_this) {
+        return function(e) {
+          return _this.stopPropagation(e);
+        };
+      })(this));
+      return this.$el.find(".dd_submit").bind("click", (function(_this) {
+        return function(e) {
+          return _this.doAction(e);
+        };
+      })(this));
+    };
+
+    TextSubToolbar.prototype.show = function(type, callback) {
+      this.callback = callback;
+      this.$el.find('.dd_sub_toolbar_content').hide();
+      this.$el.find(".dd_toolbar_" + type).show();
+      return this.$el.slideDown(200);
+    };
+
+    TextSubToolbar.prototype.doAction = function(e) {
+      return e.stopPropagation();
+    };
+
+    TextSubToolbar.prototype.hide = function() {
+      $('.dd_toolbar button').removeClass('active');
+      return this.$el.slideUp(200);
+    };
+
+    TextSubToolbar.prototype.stopPropagation = function(e) {
+      return e.stopPropagation();
+    };
+
+    TextSubToolbar.prototype.html = function() {
+      return "";
+    };
+
+    return TextSubToolbar;
+
+  })();
+
+  DapperDoe.TextSubToolbar.Color = (function(_super) {
+    __extends(Color, _super);
+
+    function Color(options) {
+      this.html = __bind(this.html, this);
+      Color.__super__.constructor.call(this, options);
+    }
+
+    Color.prototype.events = function() {
+      Color.__super__.events.call(this);
+      return this.$el.find(".color").bind("click", (function(_this) {
+        return function(e) {
+          return _this.doAction(e);
+        };
+      })(this));
+    };
+
+    Color.prototype.stopPropagation = function(e) {
+      return e.stopPropagation();
+    };
+
+    Color.prototype.doAction = function(e) {
+      var color;
+      e.stopPropagation();
+      color = $(e.target).data('color');
+      this.hide(e);
+      return this.callback(color);
+    };
+
+    Color.prototype.show = function(callback) {
+      Color.__super__.show.call(this, 'color', callback);
+      return $('.dd_toolbar button[data-action=text-color]').addClass('active');
+    };
+
+    Color.prototype.html = function() {
+      var $html, baseColor, colorWidth, colors, columnWidth, _i, _len;
+      $html = $("<div class='dd_sub_toolbar_content dd_toolbar_color'></div>");
+      colors = window.app.colorPalette;
+      console.log(colors.length);
+      columnWidth = window.app.textToolbar.toolbarWidth / colors.length;
+      colorWidth = Math.round(columnWidth - 4);
+      for (_i = 0, _len = colors.length; _i < _len; _i++) {
+        baseColor = colors[_i];
+        $html.append("<span class='color' style='background: #" + baseColor + "; width: " + colorWidth + "px; height: " + colorWidth + "px;' data-color='" + baseColor + "'></span>");
+      }
+      return $html;
+    };
+
+    return Color;
+
+  })(DapperDoe.TextSubToolbar);
+
+  DapperDoe.TextSubToolbar.Url = (function(_super) {
+    __extends(Url, _super);
+
+    function Url(options) {
+      Url.__super__.constructor.call(this, options);
+    }
+
+    Url.prototype.doAction = function(e) {
+      var cssApplier, cssClass, key, option, _ref;
+      e.stopPropagation();
+      this.url = this.$el.find('.dd_url').val();
+      this.blank = this.$el.find('.dd_blank').is(':checked');
+      this.button = this.$el.find('.dd_button').is(':checked');
+      rangy.restoreSelection(app.lastSel);
+      this.link = document.execCommand('createLink', false, this.url);
+      if (this.blank) {
+        rangy.getSelection().getRangeAt(0).commonAncestorContainer.parentNode.setAttribute("target", "_blank");
+      }
+      if (this.button) {
+        cssClass = window.app.buttonClass;
+        _ref = window.app.buttonOptions;
+        for (key in _ref) {
+          option = _ref[key];
+          cssClass += " " + this.$el.find("input[name=" + key + "]:checked").val();
+        }
+        cssApplier = rangy.createCssClassApplier(cssClass, {
+          normalize: true,
+          elementTagName: 'a'
+        });
+        cssApplier.toggleSelection();
+      }
+      return this.hide(e);
+    };
+
+    Url.prototype.show = function() {
+      $('.dd_toolbar button[data-action=link]').addClass('active');
+      return Url.__super__.show.call(this, 'url', function() {});
+    };
+
+    Url.prototype.html = function() {
+      var $html, key, klass, name, option, _ref;
+      $html = $("<div class='dd_sub_toolbar_content dd_toolbar_url'> <input type='text' placeholder='Url' class='dd_url' /> <div class='dd_submit'><i class='fa fa-check'></i></div> <div class='clearfix'></div> <div class='dd_url_options'> <label>_blank <input type='checkbox' class='dd_blank'/></label> <label>Button <input type='checkbox' class='dd_button'/></label> </div> </div>");
+      _ref = window.app.buttonOptions;
+      for (key in _ref) {
+        option = _ref[key];
+        for (klass in option) {
+          name = option[klass];
+          $html.find(".dd_url_options").append("<label> " + name + " <input type='radio' name='" + key + "' value='" + klass + "' /> </label>");
+        }
+        $html.find("input[name=" + key + "]:first").attr('checked', true);
+      }
+      return $html;
+    };
+
+    return Url;
+
+  })(DapperDoe.TextSubToolbar);
+
   DapperDoe.Modal = (function() {
     function Modal(options) {
-      document.designMode = "off";
       this.$el = this.html();
       $(window.app.topElement).append(this.$el);
       this.events();
@@ -768,20 +929,7 @@
       var settings;
       settings = {
         buttonClass: 'btn',
-        colorPalette: {
-          'eb6566': "Cayenne",
-          'f4794d': "Celosia",
-          'fbd546': "Freesia",
-          '599e7f': "Hemlock",
-          '3e8871': "Comfrey",
-          '618eb1': "Placid Blue",
-          '0d6eb2': "Dazzling Blue",
-          '595d8e': "Violet Tulip",
-          'b172ab': "Radiant Orchid",
-          '792360': "Magenta Purple",
-          'ac8b66': "Sand",
-          '8b9291': "Paloma"
-        },
+        colorPalette: ['eb6566', 'f4794d', 'fbd546', '599e7f', '3e8871', '618eb1', '0d6eb2', '595d8e', 'b172ab', '792360', 'ac8b66', '8b9291'],
         savePageCallback: function(html, callback) {
           console.log(html);
           return callback();
@@ -829,7 +977,9 @@
       this.sidebar = new DapperDoe.Sidebar({
         collection: this.template.snippetsPreviews
       });
-      return this.textToolbar = new DapperDoe.Toolbar.Text;
+      this.textToolbar = new DapperDoe.Toolbar.Text;
+      this.textSubToolbarColor = new DapperDoe.TextSubToolbar.Color;
+      return this.textSubToolbarUrl = new DapperDoe.TextSubToolbar.Url;
     };
 
     App.prototype.initTopElement = function() {

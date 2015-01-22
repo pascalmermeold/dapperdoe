@@ -14,19 +14,20 @@ $.fn.extend
     #Default settings
     settings =
       buttonClass: 'btn'
-      colorPalette:
-        'eb6566' : "Cayenne"
-        'f4794d' : "Celosia"
-        'fbd546' : "Freesia"
-        '599e7f' : "Hemlock"
-        '3e8871' : "Comfrey"
-        '618eb1' : "Placid Blue"
-        '0d6eb2' : "Dazzling Blue"
-        '595d8e' : "Violet Tulip"
-        'b172ab' : "Radiant Orchid"
-        '792360' : "Magenta Purple"
-        'ac8b66' : "Sand"
-        '8b9291' : "Paloma"
+      colorPalette: [
+        'eb6566'
+        'f4794d'
+        'fbd546'
+        '599e7f'
+        '3e8871'
+        '618eb1'
+        '0d6eb2'
+        '595d8e'
+        'b172ab'
+        '792360'
+        'ac8b66'
+        '8b9291'
+      ]
 
       #By defaut, callbacks just log
       savePageCallback: (html, callback) ->
@@ -73,6 +74,8 @@ class DapperDoe.App
     this.sidebar = new DapperDoe.Sidebar
       collection: this.template.snippetsPreviews
     this.textToolbar = new DapperDoe.Toolbar.Text
+    this.textSubToolbarColor = new DapperDoe.TextSubToolbar.Color
+    this.textSubToolbarUrl = new DapperDoe.TextSubToolbar.Url
 
   # Parses the exsiting html
   initTopElement: ->

@@ -32,10 +32,11 @@ class DapperDoe.Content.Text extends DapperDoe.Content
 		# Wrap content with p it plain text to prevent Firefox bug
 		if ((this.$el.is('p, div, blockquote')) and (this.$el.children().length == 0))
 			this.$el.wrapInner('<p></p>')
+		else if ((this.$el.is('h1, h2, h3, h4, h5, h6')) and (this.$el.children().length == 0))
+			this.$el.wrapInner('<div></div>')
 
 	events: ->
 		this.$el.bind('paste', (e) => this.handlePaste(e))
-		#this.$el.bind('keydown', (e) => this.handleBrInChrome(e))
 		this.$el.bind('dragover drop', (e) => this.preventDrag(e))
 		this.$el.bind('mouseup', () => window.app.textToolbar.show())
 
@@ -47,13 +48,6 @@ class DapperDoe.Content.Text extends DapperDoe.Content
 		temp.innerHTML = text
 		console.log(temp.textContent)
 		document.execCommand('insertHtml', false, temp.textContent)
-
-	# Handle breaklines in Chrome by inserting <br> tags instead of <div>
-	# handleBrInChrome: (e) ->
-	# 	if e.keyCode == 13
-	# 		e.preventDefault()
-	# 		e.stopPropagation()
-	# 		document.execCommand('insertHTML', false, '<br/>')
 
 	preventDrag: (e) ->
 		e.preventDefault()
@@ -142,37 +136,42 @@ class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 
 	hide: ->
 		this.$el.hide()
+		this.hideSubToolbar()
+
+	hideSubToolbar: ->
+		window.app.textSubToolbarColor.hide()
+		window.app.textSubToolbarUrl.hide()
 
 	show: ->
 		this.$el.hide()
 		boundary = rangy.getSelection().getRangeAt(0).getBoundingClientRect()
 		if(boundary.bottom > 0)
-			top = boundary.top - this.toolbarHeight - 10
+			top = boundary.top - 10
 			left = boundary.left + (boundary.width/2) - (this.toolbarWidth/2)
 			if left < 10
 				left = 10
-			if (left + this.toolbarWidth) > ($(document).width() - 10)
-				left = $(document).width() - 10 - this.toolbarWidth
+			if (left + this.toolbarWidth) > ($(window).width() - 10)
+				left = $(window).width() - 10 - this.toolbarWidth
 
-			this.$el.find('.dd_toolbar').css('top', top)
+			this.$el.find('.dd_toolbar').css('bottom', $(window).height() - top)
 			this.$el.find('.dd_toolbar').css('left', left)
-			this.$el.find('.dd_toolbar:after').css('left', 0)
 			this.$el.show()
 
 	# Commands called when clicking on a toolbar button
 	editText: (e) =>
 		window.app.lastSel = rangy.saveSelection()
+		action = $(e.currentTarget).data('action')
+		this.hideSubToolbar()
 
-		switch $(e.currentTarget).data('action')
+		switch action
 			when "bold" then document.execCommand('bold', false, null)
 			when "italic" then document.execCommand('italic', false, null)
 			when "underline" then document.execCommand('underline', false, null)
-			when "text-color" then new DapperDoe.Modal.Color({callback: this.applyForeColor})
-			when "background-color" then new DapperDoe.Modal.Color({callback: this.applyHiliteColor})
+			when "text-color" then window.app.textSubToolbarColor.show(this.applyForeColor)
 			when "align-left" then document.execCommand('justifyLeft', false, null)
 			when "align-center" then document.execCommand('justifyCenter', false, null)
 			when "align-right" then document.execCommand('justifyRight', false, null)
-			when "link" then new DapperDoe.Modal.Url()
+			when "link" then window.app.textSubToolbarUrl.show()
 			when "unlink" then document.execCommand('unlink', false, null)
 			when "clear"
 				document.execCommand('removeFormat', false, null)
@@ -184,6 +183,7 @@ class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 	# UI's DOM
 	html: ->
 		$("<div class='dd_toolbar dd_ui'>
+			<div class='dd_sub_toolbar'></div>
 			<button data-action='bold'><i class='fa fa-bold'></i></button>
 			<button data-action='italic'><i class='fa fa-italic'></i></button>
 			<button data-action='underline'><i class='fa fa-underline'></i></button>
@@ -201,10 +201,128 @@ class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 		rangy.restoreSelection(window.app.lastSel)
 		document.execCommand('foreColor', false, color)
 
+class DapperDoe.TextSubToolbar
+	constructor: (options) ->
+		this.$el = window.app.textToolbar.$el.find('.dd_sub_toolbar')
+		this.$el.hide()
+		this.$el.append(this.html())
+		this.events()
+
+	events: ->
+		this.$el.bind("click", (e) => this.stopPropagation(e))
+		this.$el.find(".dd_submit").bind("click", (e) => this.doAction(e))
+
+	show: (type,callback)->
+		this.callback = callback
+		this.$el.find('.dd_sub_toolbar_content').hide()
+		this.$el.find(".dd_toolbar_#{type}").show()
+		this.$el.slideDown(200)
+
+	doAction: (e) ->
+		e.stopPropagation()
+
+	hide: () ->
+		$('.dd_toolbar button').removeClass('active')
+		this.$el.slideUp(200)
+
+	stopPropagation: (e) ->
+		e.stopPropagation()
+
+	html: ->
+		return ""
+
+# Color modal, allowing to choose a color from the palette and execute a callback with the choosen color
+class DapperDoe.TextSubToolbar.Color extends DapperDoe.TextSubToolbar
+	constructor: (options)->
+		super(options)
+
+	events: ->
+		super()
+		this.$el.find(".color").bind("click", (e) => this.doAction(e))
+
+	stopPropagation: (e) ->
+		e.stopPropagation()
+
+	doAction: (e) ->
+		e.stopPropagation()
+		color = $(e.target).data('color')
+		this.hide(e)
+		this.callback(color)
+
+	show: (callback) ->
+		super('color', callback)
+		$('.dd_toolbar button[data-action=text-color]').addClass('active')
+
+	html: =>
+		$html = $("<div class='dd_sub_toolbar_content dd_toolbar_color'></div>")
+
+		colors = window.app.colorPalette
+		console.log(colors.length)
+		columnWidth = window.app.textToolbar.toolbarWidth / colors.length
+		colorWidth = Math.round(columnWidth - 4)
+
+		for baseColor in colors
+			$html.append("<span class='color' style='background: ##{baseColor}; width: #{colorWidth}px; height: #{colorWidth}px;' data-color='#{baseColor}'></span>")
+
+		return $html
+
+# Url modal, allowing to add a link, and optionnaly button classes to the link.
+# Adds the link to the currently selected text
+class DapperDoe.TextSubToolbar.Url extends DapperDoe.TextSubToolbar
+	constructor: (options)->
+		super(options)
+
+	doAction: (e) ->
+		e.stopPropagation()
+		this.url = this.$el.find('.dd_url').val()
+		this.blank = this.$el.find('.dd_blank').is(':checked')
+		this.button = this.$el.find('.dd_button').is(':checked')
+
+		rangy.restoreSelection(app.lastSel)
+		this.link = document.execCommand('createLink', false, this.url)
+		rangy.getSelection().getRangeAt(0).commonAncestorContainer.parentNode.setAttribute("target", "_blank") if this.blank
+
+
+		if this.button
+			cssClass = window.app.buttonClass
+			for key, option of window.app.buttonOptions
+				cssClass += " " + this.$el.find("input[name=#{key}]:checked").val()
+
+			cssApplier = rangy.createCssClassApplier(cssClass,
+				normalize: true
+				elementTagName: 'a')
+			cssApplier.toggleSelection()
+
+		this.hide(e)
+
+	show: () ->
+		$('.dd_toolbar button[data-action=link]').addClass('active')
+		super('url', -> return)
+
+	html: ->
+		$html = $("<div class='dd_sub_toolbar_content dd_toolbar_url'>
+			<input type='text' placeholder='Url' class='dd_url' />
+			<div class='dd_submit'><i class='fa fa-check'></i></div>
+			<div class='clearfix'></div>
+			<div class='dd_url_options'>
+				<label>_blank <input type='checkbox' class='dd_blank'/></label>
+				<label>Button <input type='checkbox' class='dd_button'/></label>
+			</div>
+		</div>")
+
+		for key, option of window.app.buttonOptions
+
+			for klass, name of option
+				$html.find(".dd_url_options").append("<label>
+					#{name} <input type='radio' name='#{key}' value='#{klass}' />
+				</label>")
+
+			$html.find("input[name=#{key}]:first").attr('checked', true);
+		return $html
+
 # Generic class for modals (used for links and colors for example)
 class DapperDoe.Modal
 	constructor: (options) ->
-		document.designMode = "off"
 		this.$el = this.html()
 		$(window.app.topElement).append(this.$el)
 		this.events()

@@ -92,6 +92,70 @@ body {
 			color: #fff;
 		}
 	}
+
+	button.active i {
+		color: #999;
+	}
+
+	.dd_sub_toolbar {
+		.dd_toolbar_color {
+			tr {
+				float: left;
+				width: 18px;
+				td.color {
+					width: 16px;
+					height: 16px;
+					display: inline-block;
+					border-radius: 16px;
+					margin: 2px;
+					cursor: pointer;
+				}
+			}
+			span.color {
+				display: inline-block;
+				border-radius: 300px;
+				margin: 2px;
+				cursor: pointer;
+			}
+		}
+
+		.dd_toolbar_url {
+			padding: 2%;
+			color: #fff;
+
+			.dd_url {
+				width: 91%;
+				float: left;
+				color: #333;
+				border: none;
+				border-radius: 3px;
+				padding: 3px 6px;
+				height: 28px;
+				outline: none;
+			}
+
+			.dd_submit {
+				width: 5%;
+				float: right;
+				font-size: 20px;
+			}
+
+			.dd_url_options {
+				width: 96%;
+				float: left;
+				text-align: left;
+
+				label {
+					display: inline-block;
+					margin: 2px 5px 0 0;
+				}
+			}
+
+			.clearfix {
+				clear: both;
+			}
+		}
+	}
 }
 
 .dd_toolbar:after {
@@ -178,21 +242,6 @@ body {
 				border-radius: 2px;
 				padding: 3px 8px;
 				cursor: pointer;
-			}
-
-			.dd_color_palette {
-				tr {
-					float: left;
-					width: 46px;
-					td.color {
-						width: 40px;
-						height: 40px;
-						display: inline-block;
-						border-radius: 40px;
-						margin: 3px;
-						cursor: pointer;
-					}
-				}
 			}
 		}
 	}

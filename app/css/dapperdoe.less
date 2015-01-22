@@ -72,7 +72,7 @@ body {
 // }
 
 .dd_toolbar {
-	position:fixed;
+	position:absolute;
 	text-align: center;
 	border-radius: 3px;
 	background: #333;
@@ -99,18 +99,6 @@ body {
 
 	.dd_sub_toolbar {
 		.dd_toolbar_color {
-			tr {
-				float: left;
-				width: 18px;
-				td.color {
-					width: 16px;
-					height: 16px;
-					display: inline-block;
-					border-radius: 16px;
-					margin: 2px;
-					cursor: pointer;
-				}
-			}
 			span.color {
 				display: inline-block;
 				border-radius: 300px;
@@ -138,6 +126,7 @@ body {
 				width: 5%;
 				float: right;
 				font-size: 20px;
+				cursor: pointer;
 			}
 
 			.dd_url_options {

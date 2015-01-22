@@ -353,9 +353,18 @@
       })(this));
       return this.$el.bind('mouseup', (function(_this) {
         return function() {
-          return window.app.textToolbar.show();
+          return _this.openToolbar();
         };
       })(this));
+    };
+
+    Text.prototype.openToolbar = function() {
+      var range;
+      window.app.textToolbar.hide();
+      range = rangy.getSelection().getRangeAt(0);
+      if (range.startOffset !== range.endOffset) {
+        return window.app.textToolbar.show();
+      }
     };
 
     Text.prototype.handlePaste = function(e) {
@@ -364,7 +373,6 @@
       text = (e.originalEvent || e).clipboardData.getData('text/plain') || prompt('Paste something..');
       temp = document.createElement("div");
       temp.innerHTML = text;
-      console.log(temp.textContent);
       return document.execCommand('insertHtml', false, temp.textContent);
     };
 
@@ -524,10 +532,10 @@
         if (left < 10) {
           left = 10;
         }
-        if ((left + this.toolbarWidth) > ($(window).width() - 10)) {
-          left = $(window).width() - 10 - this.toolbarWidth;
+        if ((left + this.toolbarWidth) > ($(document).width() - 10)) {
+          left = $(document).width() - 10 - this.toolbarWidth;
         }
-        this.$el.find('.dd_toolbar').css('bottom', $(window).height() - top);
+        this.$el.find('.dd_toolbar').css('bottom', $(document).height() - top - $(window).scrollTop());
         this.$el.find('.dd_toolbar').css('left', left);
         return this.$el.show();
       }
@@ -535,6 +543,9 @@
 
     Text.prototype.editText = function(e) {
       var action;
+      if (window.app.lastSel) {
+        rangy.removeMarkers(window.app.lastSel);
+      }
       window.app.lastSel = rangy.saveSelection();
       action = $(e.currentTarget).data('action');
       this.hideSubToolbar();
@@ -623,7 +634,7 @@
 
     TextSubToolbar.prototype.hide = function() {
       $('.dd_toolbar button').removeClass('active');
-      return this.$el.slideUp(200);
+      return this.$el.hide();
     };
 
     TextSubToolbar.prototype.stopPropagation = function(e) {
@@ -676,7 +687,6 @@
       var $html, baseColor, colorWidth, colors, columnWidth, _i, _len;
       $html = $("<div class='dd_sub_toolbar_content dd_toolbar_color'></div>");
       colors = window.app.colorPalette;
-      console.log(colors.length);
       columnWidth = window.app.textToolbar.toolbarWidth / colors.length;
       colorWidth = Math.round(columnWidth - 4);
       for (_i = 0, _len = colors.length; _i < _len; _i++) {
@@ -726,7 +736,9 @@
 
     Url.prototype.show = function() {
       $('.dd_toolbar button[data-action=link]').addClass('active');
-      return Url.__super__.show.call(this, 'url', function() {});
+      return Url.__super__.show.call(this, 'url', function() {
+        return console.log('');
+      });
     };
 
     Url.prototype.html = function() {

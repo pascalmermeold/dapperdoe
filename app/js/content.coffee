@@ -38,7 +38,13 @@ class DapperDoe.Content.Text extends DapperDoe.Content
 	events: ->
 		this.$el.bind('paste', (e) => this.handlePaste(e))
 		this.$el.bind('dragover drop', (e) => this.preventDrag(e))
-		this.$el.bind('mouseup', () => window.app.textToolbar.show())
+		this.$el.bind('mouseup', () => this.openToolbar())
+
+	openToolbar: ->
+		window.app.textToolbar.hide()
+		range = rangy.getSelection().getRangeAt(0)
+		if range.startOffset != range.endOffset
+			window.app.textToolbar.show()
 
 	# Removes all tags when pasting to prevent bugs due to unexpected tags from other softwares and apps
 	handlePaste: (e) ->
@@ -46,7 +52,6 @@ class DapperDoe.Content.Text extends DapperDoe.Content
 		text = (e.originalEvent || e).clipboardData.getData('text/plain') || prompt('Paste something..')
 		temp = document.createElement("div")
 		temp.innerHTML = text
-		console.log(temp.textContent)
 		document.execCommand('insertHtml', false, temp.textContent)
 
 	preventDrag: (e) ->
@@ -150,15 +155,17 @@ class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 			left = boundary.left + (boundary.width/2) - (this.toolbarWidth/2)
 			if left < 10
 				left = 10
-			if (left + this.toolbarWidth) > ($(window).width() - 10)
-				left = $(window).width() - 10 - this.toolbarWidth
+			if (left + this.toolbarWidth) > ($(document).width() - 10)
+				left = $(document).width() - 10 - this.toolbarWidth
 
-			this.$el.find('.dd_toolbar').css('bottom', $(window).height() - top)
+			this.$el.find('.dd_toolbar').css('bottom', $(document).height() - top - $(window).scrollTop())
 			this.$el.find('.dd_toolbar').css('left', left)
 			this.$el.show()
 
 	# Commands called when clicking on a toolbar button
 	editText: (e) =>
+		if(window.app.lastSel)
+			rangy.removeMarkers(window.app.lastSel)
 		window.app.lastSel = rangy.saveSelection()
 		action = $(e.currentTarget).data('action')
 		this.hideSubToolbar()
@@ -223,7 +230,7 @@ class DapperDoe.TextSubToolbar
 
 	hide: () ->
 		$('.dd_toolbar button').removeClass('active')
-		this.$el.slideUp(200)
+		this.$el.hide()
 
 	stopPropagation: (e) ->
 		e.stopPropagation()
@@ -257,7 +264,6 @@ class DapperDoe.TextSubToolbar.Color extends DapperDoe.TextSubToolbar
 		$html = $("<div class='dd_sub_toolbar_content dd_toolbar_color'></div>")
 
 		colors = window.app.colorPalette
-		console.log(colors.length)
 		columnWidth = window.app.textToolbar.toolbarWidth / colors.length
 		colorWidth = Math.round(columnWidth - 4)
 
@@ -297,7 +303,7 @@ class DapperDoe.TextSubToolbar.Url extends DapperDoe.TextSubToolbar
 
 	show: () ->
 		$('.dd_toolbar button[data-action=link]').addClass('active')
-		super('url', -> return)
+		super('url', -> console.log(''))
 
 	html: ->
 		$html = $("<div class='dd_sub_toolbar_content dd_toolbar_url'>

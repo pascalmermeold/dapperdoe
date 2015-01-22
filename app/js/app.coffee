@@ -27,6 +27,7 @@ $.fn.extend
         '792360'
         'ac8b66'
         '8b9291'
+        'ffffff'
       ]
 
       #By defaut, callbacks just log

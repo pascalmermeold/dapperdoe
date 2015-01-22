@@ -127,6 +127,7 @@
 
   DapperDoe.Snippet = (function() {
     function Snippet(options) {
+      this.changeColor = __bind(this.changeColor, this);
       this.$el = options.el;
       this.addTools();
       this.parseSnippet();
@@ -149,9 +150,9 @@
           return _this.destroy();
         };
       })(this));
-      return this.$el.find(".snippet_settings").bind("click", (function(_this) {
-        return function() {
-          return _this.settings();
+      return this.$el.find(".color").bind("click", (function(_this) {
+        return function(e) {
+          return _this.changeColor(e);
         };
       })(this));
     };
@@ -165,11 +166,25 @@
     };
 
     Snippet.prototype.addTools = function() {
-      return this.$el.append("<div class='tools dd_ui'> <div class='tool snippet_mover'><i class='fa fa-arrows'></i></div> <div class='tool snippet_destroyer'><i class='fa fa-trash'></i></div> <div class='tool snippet_settings'><i class='fa fa-adjust'></i></div> </div>");
+      var baseColor, _i, _len, _ref, _results;
+      this.$el.append("<div class='tools dd_ui'> <div class='tool snippet_mover'><i class='fa fa-arrows'></i></div> <div class='tool snippet_destroyer'><i class='fa fa-trash'></i></div> </div>");
+      _ref = window.app.colorPalette;
+      _results = [];
+      for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+        baseColor = _ref[_i];
+        _results.push(this.$el.find('.tools').append("<span class='color tool' style='background: #" + baseColor + ";' data-color='" + baseColor + "'></span>"));
+      }
+      return _results;
+    };
+
+    Snippet.prototype.changeColor = function(e) {
+      return this.$el.animate({
+        'backgroundColor': '#' + $(e.target).data('color')
+      }, 200);
     };
 
     Snippet.prototype.settings = function() {
-      return console.log('fuck');
+      return this.backgroundManager.show();
     };
 
     Snippet.prototype.parseSnippet = function() {
@@ -941,7 +956,7 @@
       var settings;
       settings = {
         buttonClass: 'btn',
-        colorPalette: ['eb6566', 'f4794d', 'fbd546', '599e7f', '3e8871', '618eb1', '0d6eb2', '595d8e', 'b172ab', '792360', 'ac8b66', '8b9291'],
+        colorPalette: ['eb6566', 'f4794d', 'fbd546', '599e7f', '3e8871', '618eb1', '0d6eb2', '595d8e', 'b172ab', '792360', 'ac8b66', '8b9291', 'ffffff'],
         savePageCallback: function(html, callback) {
           console.log(html);
           return callback();

@@ -117,69 +117,6 @@ body {
   border-width: 8px;
   margin-left: -8px;
 }
-.dd_modal_overlay {
-  background: rgba(0, 0, 0, 0.3);
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  z-index: 200;
-  display: -webkit-box;
-  display: -moz-box;
-  display: -ms-flexbox;
-  display: -webkit-flex;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.dd_modal_overlay .dd_modal {
-  background: #fff;
-  padding: 35px 20px 20px 20px;
-  border-radius: 3px;
-  position: relative;
-}
-.dd_modal_overlay .dd_modal .dd_close_modal {
-  position: absolute;
-  top: 5px;
-  right: 8px;
-  cursor: pointer;
-}
-.dd_modal_overlay .dd_modal .dd_content .dd_options label {
-  display: inline-block;
-  margin-right: 12px;
-}
-.dd_modal_overlay .dd_modal .dd_content .dd_button_options {
-  clear: both;
-  background: #eee;
-  border-radius: 2px;
-  padding: 6px 10px;
-  margin-bottom: 10px;
-}
-.dd_modal_overlay .dd_modal .dd_content .dd_button_options b {
-  width: 100%;
-  border-bottom: solid 1px #ddd;
-  display: inline-block;
-  padding-bottom: 5px;
-  margin-bottom: 10px;
-}
-.dd_modal_overlay .dd_modal .dd_content > input[type=text] {
-  display: inline-block;
-  width: 100%;
-  border: solid 1px #ddd;
-  border-radius: 2px;
-  padding: 5px;
-  margin-bottom: 10px;
-}
-.dd_modal_overlay .dd_modal .dd_content > input[type=submit] {
-  float: right;
-  background: #333;
-  border: none;
-  color: #fff;
-  border-radius: 2px;
-  padding: 3px 8px;
-  cursor: pointer;
-}
 #dd_save_page_button {
   position: fixed;
   z-index: 99;
@@ -231,8 +168,10 @@ body {
   position: absolute;
   top: 5px;
   left: 5px;
+  width: 100%;
 }
 .dd_top_element .dd_snippet .tools .tool {
+  float: left;
   font-size: 20px;
   text-align: center;
   background: rgba(0, 0, 0, 0.8);
@@ -250,6 +189,30 @@ body {
   cursor: move;
 }
 .dd_top_element .dd_snippet .tools .snippet_destroyer {
+  cursor: pointer;
+}
+.dd_top_element .dd_snippet .tools .dd_snippet_settings_wrapper {
+  position: relative;
+  width: 100%;
+}
+.dd_top_element .dd_snippet .tools .dd_snippet_settings_wrapper .dd_background_manager {
+  background: #333;
+  border-radius: 36px;
+  display: none;
+  position: absolute;
+  padding: 0;
+  margin: 0;
+  top: 0;
+  left: 44px;
+  width: 100%;
+}
+.dd_top_element .dd_snippet .tools .dd_snippet_settings_wrapper .dd_background_manager span {
+  display: inline-block;
+  width: 28px;
+  height: 28px;
+  line-height: 32px;
+  border-radius: 32px;
+  margin: 4px 2px 0 2px;
   cursor: pointer;
 }
 .dd_top_element .dd_snippet .dd_image_wrapper {

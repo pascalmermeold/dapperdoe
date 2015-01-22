@@ -79,7 +79,7 @@ class DapperDoe.Snippet
     this.$el.bind("mouseover", => this.showTools())
     this.$el.bind("mouseleave", => this.hideTools())
     this.$el.find(".snippet_destroyer").bind("click", => this.destroy())
-    this.$el.find(".snippet_settings").bind("click", => this.settings())
+    this.$el.find(".color").bind("click", (e) => this.changeColor(e))
 
   showTools: ->
     this.$el.find('.tool').show()
@@ -92,11 +92,15 @@ class DapperDoe.Snippet
     this.$el.append("<div class='tools dd_ui'>
       <div class='tool snippet_mover'><i class='fa fa-arrows'></i></div>
       <div class='tool snippet_destroyer'><i class='fa fa-trash'></i></div>
-      <div class='tool snippet_settings'><i class='fa fa-adjust'></i></div>
     </div>")
+    for baseColor in window.app.colorPalette
+      this.$el.find('.tools').append("<span class='color tool' style='background: ##{baseColor};' data-color='#{baseColor}'></span>")
+
+  changeColor: (e) =>
+    this.$el.animate({'backgroundColor': '#' + $(e.target).data('color')}, 200)
 
   settings: ->
-    console.log('fuck')
+    this.backgroundManager.show()
 
   # Makes snippet's content editable by creating new content objects
   parseSnippet: ->

@@ -130,3 +130,28 @@ All the code is in the /app folder. It's only 1 less file and 4 coffee script fi
 DapperDoe depends on jQuery, jQuery UI but also Rangy. Because Rangy is light, stable and tedious to add to every project, it is added in the compiled source.
 
 If you need a feature, I'll be happy to point you in the right direction so you can contribute to the project and add it.
+
+## Release notes
+
+####0.2.0
+
+**Features / Improvements**
+
+* Font Awesome as a dependency
+* New text editor (more user-friendly and Firefox compatible)
+* 
+
+**Bugs**
+
+* Firefox text alignment
+
+
+####0.1.0
+
+**First release, basic editor.**
+
+* Parse html
+* Edit html `<p>`, `<hn>`, `<img>`
+* Basic UI
+* Save button
+* Rows ordering

@@ -100,7 +100,7 @@ class DapperDoe.Snippet
 
   # Makes snippet's content editable by creating new content objects
   parseSnippet: ->
-    this.$el.find('a, p, h1, h2, h3, h4, h5, h6').each ->  new DapperDoe.Content.Text({el: $(this)})
+    this.$el.find('.dd_text').each ->  new DapperDoe.Content.Text({el: $(this)})
     this.$el.find('img').each -> new DapperDoe.Content.Image({el: $(this)})
 
   destroy: ->
@@ -125,8 +125,8 @@ class DapperDoe.AppView
     this.parsePage()
 
   events: ->
-    $('body').bind('click', => this.removeToolbars())
-    this.$el.bind("click", => this.removeToolbars())
+    $('body').bind('click', => window.app.textToolbar.hide())
+    this.$el.bind("click", => window.app.textToolbar.hide())
     $("#dd_save_page_button").bind("click", => this.savePage())
 
   # Adds a snippet to the page, giving it a random id
@@ -136,9 +136,6 @@ class DapperDoe.AppView
     $(ui.helper).attr('id',"snippet_#{index}")
     $(ui.helper).removeAttr('style')
     $(ui.item).trigger('addSnippet', {element: $("#snippet_#{index}")})
-
-  removeToolbars: (e) ->
-    $(window.app.topElement).find('.dd_toolbar').remove()
 
   addTools: ->
     $('body').append("<div class='dd_loader'><i class='fa fa-circle-o-notch fa-spin'></i></div>")
@@ -153,9 +150,13 @@ class DapperDoe.AppView
     this.startLoader()
     html = this.$el.clone()
     $(html).find('.dd_ui').remove()
+    $(html).find('.rangySelectionBoundary').remove()
     $(html).find('*[contenteditable=true]').removeAttr('contenteditable')
     $(html).find('.dd_image_wrapper').each ->
       $(this).find('img').appendTo($(this).parent())
+      $(this).remove()
+    $(html).find('.dd_text .dd_text_content').each ->
+      $(this).children().appendTo($(this).parent())
       $(this).remove()
     window.app.savePageCallback(html.html().replace(/(\r\n|\n|\r|\t)/gm,"").replace(/<script>/gi,'').replace(/<\/script>/gi,''), =>
       this.stopLoader()

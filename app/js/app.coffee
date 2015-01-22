@@ -64,14 +64,15 @@ class DapperDoe.App
       callback: this.buildApp
 
   # Called when the template has been initialized
-  buildApp: ->
-    window.app.initTopElement()
-    window.app.buildUI()
+  buildApp: =>
+    this.initTopElement()
+    this.buildUI()
 
   # Builds Dapper Doe UI based on the template
   buildUI: ->
     this.sidebar = new DapperDoe.Sidebar
       collection: this.template.snippetsPreviews
+    this.textToolbar = new DapperDoe.Toolbar.Text
 
   # Parses the exsiting html
   initTopElement: ->

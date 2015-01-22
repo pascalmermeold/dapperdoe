@@ -1,4 +1,4 @@
-/*! Dapper Doe - v0.1.0 - 2015-01-21
+/*! Dapper Doe - v0.1.0 - 2015-01-22
 * https://github.com/pascalmerme/dapperdoe
 * Copyright (c) 2015 Pascal Merme; Licensed MIT */
 (function() {
@@ -173,7 +173,7 @@
     };
 
     Snippet.prototype.parseSnippet = function() {
-      this.$el.find('a, p, h1, h2, h3, h4, h5, h6').each(function() {
+      this.$el.find('.dd_text').each(function() {
         return new DapperDoe.Content.Text({
           el: $(this)
         });
@@ -215,12 +215,12 @@
     AppView.prototype.events = function() {
       $('body').bind('click', (function(_this) {
         return function() {
-          return _this.removeToolbars();
+          return window.app.textToolbar.hide();
         };
       })(this));
       this.$el.bind("click", (function(_this) {
         return function() {
-          return _this.removeToolbars();
+          return window.app.textToolbar.hide();
         };
       })(this));
       return $("#dd_save_page_button").bind("click", (function(_this) {
@@ -241,10 +241,6 @@
       });
     };
 
-    AppView.prototype.removeToolbars = function(e) {
-      return $(window.app.topElement).find('.dd_toolbar').remove();
-    };
-
     AppView.prototype.addTools = function() {
       $('body').append("<div class='dd_loader'><i class='fa fa-circle-o-notch fa-spin'></i></div>");
       return $('body').append("<div id='dd_save_page_button'><i class='fa fa-save'></i> Save</div>");
@@ -263,9 +259,14 @@
       this.startLoader();
       html = this.$el.clone();
       $(html).find('.dd_ui').remove();
+      $(html).find('.rangySelectionBoundary').remove();
       $(html).find('*[contenteditable=true]').removeAttr('contenteditable');
       $(html).find('.dd_image_wrapper').each(function() {
         $(this).find('img').appendTo($(this).parent());
+        return $(this).remove();
+      });
+      $(html).find('.dd_text .dd_text_content').each(function() {
+        $(this).children().appendTo($(this).parent());
         return $(this).remove();
       });
       return window.app.savePageCallback(html.html().replace(/(\r\n|\n|\r|\t)/gm, "").replace(/<script>/gi, '').replace(/<\/script>/gi, ''), (function(_this) {
@@ -332,22 +333,25 @@
       Text.__super__.constructor.call(this, options);
       this.$el.attr('contenteditable', 'true');
       this.events();
+      if ((this.$el.is('p, div, blockquote')) && (this.$el.children().length === 0)) {
+        this.$el.wrapInner('<p></p>');
+      }
     }
 
     Text.prototype.events = function() {
-      this.$el.bind("focus", (function(_this) {
-        return function() {
-          return _this.showToolbar();
-        };
-      })(this));
       this.$el.bind('paste', (function(_this) {
         return function(e) {
           return _this.handlePaste(e);
         };
       })(this));
-      return this.$el.bind('keydown', (function(_this) {
+      this.$el.bind('dragover drop', (function(_this) {
         return function(e) {
-          return _this.handleBrInChrome(e);
+          return _this.preventDrag(e);
+        };
+      })(this));
+      return this.$el.bind('mouseup', (function(_this) {
+        return function() {
+          return window.app.textToolbar.show();
         };
       })(this));
     };
@@ -362,18 +366,9 @@
       return document.execCommand('insertHtml', false, temp.textContent);
     };
 
-    Text.prototype.handleBrInChrome = function(e) {
-      if (e.keyCode === 13) {
-        e.preventDefault();
-        e.stopPropagation();
-        return document.execCommand('insertHTML', false, '<br/><br/>');
-      }
-    };
-
-    Text.prototype.showToolbar = function(e) {
-      return this.toolbar = new DapperDoe.Toolbar.Text({
-        content: this
-      });
+    Text.prototype.preventDrag = function(e) {
+      e.preventDefault();
+      return false;
     };
 
     return Text;
@@ -488,12 +483,14 @@
     __extends(Text, _super);
 
     function Text(options) {
+      this.applyForeColor = __bind(this.applyForeColor, this);
       this.editText = __bind(this.editText, this);
       Text.__super__.constructor.call(this, options);
-      this.content = options.content;
-      window.app.view.removeToolbars();
       this.$el.html(this.html);
       $(window.app.topElement).append(this.$el);
+      this.toolbarWidth = this.$el.find('.dd_toolbar').width();
+      this.toolbarHeight = this.$el.find('.dd_toolbar').height();
+      this.$el.hide();
       this.events();
     }
 
@@ -505,55 +502,84 @@
       })(this));
     };
 
+    Text.prototype.hide = function() {
+      return this.$el.hide();
+    };
+
+    Text.prototype.show = function() {
+      var boundary, left, top;
+      this.$el.hide();
+      boundary = rangy.getSelection().getRangeAt(0).getBoundingClientRect();
+      if (boundary.bottom > 0) {
+        top = boundary.top - this.toolbarHeight - 10;
+        left = boundary.left + (boundary.width / 2) - (this.toolbarWidth / 2);
+        if (left < 10) {
+          left = 10;
+        }
+        if ((left + this.toolbarWidth) > ($(document).width() - 10)) {
+          left = $(document).width() - 10 - this.toolbarWidth;
+        }
+        this.$el.find('.dd_toolbar').css('top', top);
+        this.$el.find('.dd_toolbar').css('left', left);
+        this.$el.find('.dd_toolbar:after').css('left', 0);
+        return this.$el.show();
+      }
+    };
+
     Text.prototype.editText = function(e) {
       window.app.lastSel = rangy.saveSelection();
       switch ($(e.currentTarget).data('action')) {
         case "bold":
-          return document.execCommand('bold', false, null);
+          document.execCommand('bold', false, null);
+          break;
         case "italic":
-          return document.execCommand('italic', false, null);
+          document.execCommand('italic', false, null);
+          break;
         case "underline":
-          return document.execCommand('underline', false, null);
+          document.execCommand('underline', false, null);
+          break;
         case "text-color":
-          return new DapperDoe.Modal.Color({
+          new DapperDoe.Modal.Color({
             callback: this.applyForeColor
           });
+          break;
         case "background-color":
-          return new DapperDoe.Modal.Color({
+          new DapperDoe.Modal.Color({
             callback: this.applyHiliteColor
           });
+          break;
         case "align-left":
-          return document.execCommand('justifyLeft', false, null);
+          document.execCommand('justifyLeft', false, null);
+          break;
         case "align-center":
-          return document.execCommand('justifyCenter', false, null);
+          document.execCommand('justifyCenter', false, null);
+          break;
         case "align-right":
-          return document.execCommand('justifyRight', false, null);
+          document.execCommand('justifyRight', false, null);
+          break;
         case "link":
-          return new DapperDoe.Modal.Url();
+          new DapperDoe.Modal.Url();
+          break;
         case "unlink":
-          return document.execCommand('unlink', false, null);
-        case "list":
-          return document.execCommand('insertUnorderedList', false, null);
+          document.execCommand('unlink', false, null);
+          break;
         case "clear":
           document.execCommand('removeFormat', false, null);
-          return document.execCommand('unlink', false, null);
+          document.execCommand('unlink', false, null);
+          break;
         case "undo":
-          return document.execCommand('undo', false, null);
+          document.execCommand('undo', false, null);
       }
+      return this.show();
     };
 
     Text.prototype.html = function() {
-      return $("<div class='dd_toolbar dd_ui'> <button data-action='bold'><i class='fa fa-bold'></i></button> <button data-action='italic'><i class='fa fa-italic'></i></button> <button data-action='underline'><i class='fa fa-underline'></i></button> <button data-action='text-color'><i class='fa fa-paint-brush'></i></button> <button data-action='background-color'><i class='fa fa-tint'></i></button> <button data-action='align-left'><i class='fa fa-align-left'></i></button> <button data-action='align-center'><i class='fa fa-align-center'></i></button> <button data-action='align-right'><i class='fa fa-align-right'></i></button> <button data-action='link'><i class='fa fa-link'></i></button> <button data-action='unlink'><i class='fa fa-unlink'></i></button> <button data-action='list'><i class='fa fa-list-ul'></i></button> <button data-action='clear'><i class='fa fa-eraser'></i></button> <button data-action='undo'><i class='fa fa-undo'></i></button> </div>");
+      return $("<div class='dd_toolbar dd_ui'> <button data-action='bold'><i class='fa fa-bold'></i></button> <button data-action='italic'><i class='fa fa-italic'></i></button> <button data-action='underline'><i class='fa fa-underline'></i></button> <button data-action='text-color'><i class='fa fa-tint'></i></button> <button data-action='align-left'><i class='fa fa-align-left'></i></button> <button data-action='align-center'><i class='fa fa-align-center'></i></button> <button data-action='align-right'><i class='fa fa-align-right'></i></button> <button data-action='link'><i class='fa fa-link'></i></button> <button data-action='unlink'><i class='fa fa-unlink'></i></button> <button data-action='clear'><i class='fa fa-eraser'></i></button> <button data-action='undo'><i class='fa fa-undo'></i></button> </div>");
     };
 
     Text.prototype.applyForeColor = function(color) {
-      rangy.restoreSelection(app.lastSel);
+      rangy.restoreSelection(window.app.lastSel);
       return document.execCommand('foreColor', false, color);
-    };
-
-    Text.prototype.applyHiliteColor = function(color) {
-      rangy.restoreSelection(app.lastSel);
-      return document.execCommand('hiliteColor', false, color);
     };
 
     return Text;
@@ -562,6 +588,7 @@
 
   DapperDoe.Modal = (function() {
     function Modal(options) {
+      document.designMode = "off";
       this.$el = this.html();
       $(window.app.topElement).append(this.$el);
       this.events();
@@ -633,8 +660,8 @@
       var color;
       e.stopPropagation();
       color = $(e.target).data('color');
-      this.callback(color);
-      return this.closeModal(e);
+      this.closeModal(e);
+      return this.callback(color);
     };
 
     Color.prototype.colorLuminance = function(hex, lum) {
@@ -731,7 +758,8 @@
 }).call(this);
 
 (function() {
-  var $;
+  var $,
+    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
   $ = jQuery;
 
@@ -777,6 +805,7 @@
 
   DapperDoe.App = (function() {
     function App(options) {
+      this.buildApp = __bind(this.buildApp, this);
       this.snippetsPath = options.settings.snippetsPath;
       this.buttonClass = options.settings.buttonClass;
       this.buttonOptions = options.settings.buttonOptions;
@@ -792,14 +821,15 @@
     }
 
     App.prototype.buildApp = function() {
-      window.app.initTopElement();
-      return window.app.buildUI();
+      this.initTopElement();
+      return this.buildUI();
     };
 
     App.prototype.buildUI = function() {
-      return this.sidebar = new DapperDoe.Sidebar({
+      this.sidebar = new DapperDoe.Sidebar({
         collection: this.template.snippetsPreviews
       });
+      return this.textToolbar = new DapperDoe.Toolbar.Text;
     };
 
     App.prototype.initTopElement = function() {
@@ -899,6 +929,11 @@ h;++d)b[d]=""+this._ranges[d];return b.join("")};g.collapse=function(b,d){q(this
 };g.selectAllChildren=function(b){q(this,b);var d=l.createRange(c.getDocument(b));d.selectNodeContents(b);this.removeAllRanges();this.addRange(d)};g.deleteFromDocument=function(){if(M&&V&&this.docSelection.type=="Control"){for(var b=this.docSelection.createRange(),d;b.length;){d=b.item(0);b.remove(d);d.parentNode.removeChild(d)}this.refresh()}else if(this.rangeCount){b=this.getAllRanges();this.removeAllRanges();d=0;for(var h=b.length;d<h;++d)b[d].deleteContents();this.addRange(b[h-1])}};g.getAllRanges=
 function(){return this._ranges.slice(0)};g.setSingleRange=function(b){this.setRanges([b])};g.containsNode=function(b,d){for(var h=0,D=this._ranges.length;h<D;++h)if(this._ranges[h].containsNode(b,d))return true;return false};g.toHtml=function(){var b="";if(this.rangeCount){b=k.getRangeDocument(this._ranges[0]).createElement("div");for(var d=0,h=this._ranges.length;d<h;++d)b.appendChild(this._ranges[d].cloneContents());b=b.innerHTML}return b};g.getName=function(){return"WrappedSelection"};g.inspect=
 function(){return v(this)};g.detach=function(){this.win=this.anchorNode=this.focusNode=this.win._rangySelection=null};x.inspect=v;l.Selection=x;l.selectionPrototype=g;l.addCreateMissingNativeApiListener(function(b){if(typeof b.getSelection=="undefined")b.getSelection=function(){return l.getSelection(this)};b=null})});
+rangy.createModule("SaveRestore",function(h,m){function n(a,g){var e="selectionBoundary_"+ +new Date+"_"+(""+Math.random()).slice(2),c,f=p.getDocument(a.startContainer),d=a.cloneRange();d.collapse(g);c=f.createElement("span");c.id=e;c.style.lineHeight="0";c.style.display="none";c.className="rangySelectionBoundary";c.appendChild(f.createTextNode(q));d.insertNode(c);d.detach();return c}function o(a,g,e,c){if(a=(a||document).getElementById(e)){g[c?"setStartBefore":"setEndBefore"](a);a.parentNode.removeChild(a)}else m.warn("Marker element has been removed. Cannot restore selection.")}
+function r(a,g){return g.compareBoundaryPoints(a.START_TO_START,a)}function k(a,g){var e=(a||document).getElementById(g);e&&e.parentNode.removeChild(e)}h.requireModules(["DomUtil","DomRange","WrappedRange"]);var p=h.dom,q="\ufeff";h.saveSelection=function(a){a=a||window;var g=a.document;if(h.isSelectionValid(a)){var e=h.getSelection(a),c=e.getAllRanges(),f=[],d,j;c.sort(r);for(var b=0,i=c.length;b<i;++b){d=c[b];if(d.collapsed){j=n(d,false);f.push({markerId:j.id,collapsed:true})}else{j=n(d,false);
+d=n(d,true);f[b]={startMarkerId:d.id,endMarkerId:j.id,collapsed:false,backwards:c.length==1&&e.isBackwards()}}}for(b=i-1;b>=0;--b){d=c[b];if(d.collapsed)d.collapseBefore((g||document).getElementById(f[b].markerId));else{d.setEndBefore((g||document).getElementById(f[b].endMarkerId));d.setStartAfter((g||document).getElementById(f[b].startMarkerId))}}e.setRanges(c);return{win:a,doc:g,rangeInfos:f,restored:false}}else m.warn("Cannot save selection. This usually happens when the selection is collapsed and the selection document has lost focus.")};
+h.restoreSelection=function(a,g){if(!a.restored){for(var e=a.rangeInfos,c=h.getSelection(a.win),f=[],d=e.length,j=d-1,b,i;j>=0;--j){b=e[j];i=h.createRange(a.doc);if(b.collapsed)if(b=(a.doc||document).getElementById(b.markerId)){b.style.display="inline";var l=b.previousSibling;if(l&&l.nodeType==3){b.parentNode.removeChild(b);i.collapseToPoint(l,l.length)}else{i.collapseBefore(b);b.parentNode.removeChild(b)}}else m.warn("Marker element has been removed. Cannot restore selection.");else{o(a.doc,i,b.startMarkerId,
+true);o(a.doc,i,b.endMarkerId,false)}d==1&&i.normalizeBoundaries();f[j]=i}if(d==1&&g&&h.features.selectionHasExtend&&e[0].backwards){c.removeAllRanges();c.addRange(f[0],true)}else c.setRanges(f);a.restored=true}};h.removeMarkerElement=k;h.removeMarkers=function(a){for(var g=a.rangeInfos,e=0,c=g.length,f;e<c;++e){f=g[e];if(f.collapsed)k(a.doc,f.markerId);else{k(a.doc,f.startMarkerId);k(a.doc,f.endMarkerId)}}}});
 rangy.createModule("CssClassApplier",function(i,v){function r(a,b){return a.className&&RegExp("(?:^|\\s)"+b+"(?:\\s|$)").test(a.className)}function s(a,b){if(a.className)r(a,b)||(a.className+=" "+b);else a.className=b}function o(a){return a.split(/\s+/).sort().join(" ")}function w(a,b){return o(a.className)==o(b.className)}function x(a){for(var b=a.parentNode;a.hasChildNodes();)b.insertBefore(a.firstChild,a);b.removeChild(a)}function y(a,b){var c=a.cloneRange();c.selectNodeContents(b);var d=c.intersection(a);
 d=d?d.toString():"";c.detach();return d!=""}function z(a){return a.getNodes([3],function(b){return y(a,b)})}function A(a,b){if(a.attributes.length!=b.attributes.length)return false;for(var c=0,d=a.attributes.length,e,f;c<d;++c){e=a.attributes[c];f=e.name;if(f!="class"){f=b.attributes.getNamedItem(f);if(e.specified!=f.specified)return false;if(e.specified&&e.nodeValue!==f.nodeValue)return false}}return true}function B(a,b){for(var c=0,d=a.attributes.length,e;c<d;++c){e=a.attributes[c].name;if(!(b&&
 h.arrayContains(b,e))&&a.attributes[c].specified&&e!="class")return true}return false}function C(a){var b;return a&&a.nodeType==1&&((b=a.parentNode)&&b.nodeType==9&&b.designMode=="on"||k(a)&&!k(a.parentNode))}function D(a){return(k(a)||a.nodeType!=1&&k(a.parentNode))&&!C(a)}function E(a){return a&&a.nodeType==1&&!M.test(p(a,"display"))}function N(a){if(a.data.length==0)return true;if(O.test(a.data))return false;switch(p(a.parentNode,"whiteSpace")){case "pre":case "pre-wrap":case "-moz-pre-wrap":return false;
@@ -917,8 +952,141 @@ d=0,e=b.length;d<e;++d){c=b[d];!this.isIgnorableWhiteSpaceNode(c)&&!this.getSelf
 0,g=b.length;f<g;++f){c=b[f];(d=this.getSelfOrAncestorWithClass(c))&&this.isModifiable(c)&&this.undoToTextNode(c,a,d);a.setStart(b[0],0);a.setEnd(e,e.length)}this.normalize&&this.postApply(b,a,true)}},undoToSelection:function(a){a=a||window;a=i.getSelection(a);var b=a.getAllRanges(),c;a.removeAllRanges();for(var d=0,e=b.length;d<e;++d){c=b[d];this.undoToRange(c);a.addRange(c)}},getTextSelectedByRange:function(a,b){var c=b.cloneRange();c.selectNodeContents(a);var d=c.intersection(b);d=d?d.toString():
 "";c.detach();return d},isAppliedToRange:function(a){if(a.collapsed)return!!this.getSelfOrAncestorWithClass(a.commonAncestorContainer);else{for(var b=a.getNodes([3]),c=0,d;d=b[c++];)if(!this.isIgnorableWhiteSpaceNode(d)&&y(a,d)&&this.isModifiable(d)&&!this.getSelfOrAncestorWithClass(d))return false;return true}},isAppliedToSelection:function(a){a=a||window;a=i.getSelection(a).getAllRanges();for(var b=a.length;b--;)if(!this.isAppliedToRange(a[b]))return false;return true},toggleRange:function(a){this.isAppliedToRange(a)?
 this.undoToRange(a):this.applyToRange(a)},toggleSelection:function(a){this.isAppliedToSelection(a)?this.undoToSelection(a):this.applyToSelection(a)},detach:function(){}};q.util={hasClass:r,addClass:s,removeClass:H,hasSameClasses:w,replaceWithOwnChildren:x,elementsHaveSameNonClassAttributes:A,elementHasNonClassAttributes:B,splitNodeAt:m,isEditableElement:k,isEditingHost:C,isEditable:D};i.CssClassApplier=q;i.createCssClassApplier=function(a,b,c){return new q(a,b,c)}});
-rangy.createModule("SaveRestore",function(h,m){function n(a,g){var e="selectionBoundary_"+ +new Date+"_"+(""+Math.random()).slice(2),c,f=p.getDocument(a.startContainer),d=a.cloneRange();d.collapse(g);c=f.createElement("span");c.id=e;c.style.lineHeight="0";c.style.display="none";c.className="rangySelectionBoundary";c.appendChild(f.createTextNode(q));d.insertNode(c);d.detach();return c}function o(a,g,e,c){if(a=(a||document).getElementById(e)){g[c?"setStartBefore":"setEndBefore"](a);a.parentNode.removeChild(a)}else m.warn("Marker element has been removed. Cannot restore selection.")}
-function r(a,g){return g.compareBoundaryPoints(a.START_TO_START,a)}function k(a,g){var e=(a||document).getElementById(g);e&&e.parentNode.removeChild(e)}h.requireModules(["DomUtil","DomRange","WrappedRange"]);var p=h.dom,q="\ufeff";h.saveSelection=function(a){a=a||window;var g=a.document;if(h.isSelectionValid(a)){var e=h.getSelection(a),c=e.getAllRanges(),f=[],d,j;c.sort(r);for(var b=0,i=c.length;b<i;++b){d=c[b];if(d.collapsed){j=n(d,false);f.push({markerId:j.id,collapsed:true})}else{j=n(d,false);
-d=n(d,true);f[b]={startMarkerId:d.id,endMarkerId:j.id,collapsed:false,backwards:c.length==1&&e.isBackwards()}}}for(b=i-1;b>=0;--b){d=c[b];if(d.collapsed)d.collapseBefore((g||document).getElementById(f[b].markerId));else{d.setEndBefore((g||document).getElementById(f[b].endMarkerId));d.setStartAfter((g||document).getElementById(f[b].startMarkerId))}}e.setRanges(c);return{win:a,doc:g,rangeInfos:f,restored:false}}else m.warn("Cannot save selection. This usually happens when the selection is collapsed and the selection document has lost focus.")};
-h.restoreSelection=function(a,g){if(!a.restored){for(var e=a.rangeInfos,c=h.getSelection(a.win),f=[],d=e.length,j=d-1,b,i;j>=0;--j){b=e[j];i=h.createRange(a.doc);if(b.collapsed)if(b=(a.doc||document).getElementById(b.markerId)){b.style.display="inline";var l=b.previousSibling;if(l&&l.nodeType==3){b.parentNode.removeChild(b);i.collapseToPoint(l,l.length)}else{i.collapseBefore(b);b.parentNode.removeChild(b)}}else m.warn("Marker element has been removed. Cannot restore selection.");else{o(a.doc,i,b.startMarkerId,
-true);o(a.doc,i,b.endMarkerId,false)}d==1&&i.normalizeBoundaries();f[j]=i}if(d==1&&g&&h.features.selectionHasExtend&&e[0].backwards){c.removeAllRanges();c.addRange(f[0],true)}else c.setRanges(f);a.restored=true}};h.removeMarkerElement=k;h.removeMarkers=function(a){for(var g=a.rangeInfos,e=0,c=g.length,f;e<c;++e){f=g[e];if(f.collapsed)k(a.doc,f.markerId);else{k(a.doc,f.startMarkerId);k(a.doc,f.endMarkerId)}}}});
+rangy.createModule("Coordinates", function(api, module) {
+    api.requireModules( ["WrappedSelection", "WrappedRange"] );
+
+    var WrappedRange = api.WrappedRange;
+
+    function mergeRects(rect1, rect2) {
+        var rect = {
+            top: Math.min(rect1.top, rect2.top),
+            bottom: Math.max(rect1.bottom, rect2.bottom),
+            left: Math.min(rect1.left, rect2.left),
+            right: Math.max(rect1.right, rect2.right)
+        };
+        rect.width = rect.right - rect.left;
+        rect.height = rect.bottom - rect.top;
+
+        return rect;
+    }
+
+    var getRangeBoundingClientRect = (function() {
+
+        // Test for getBoundingClientRect support in Range
+        var testRange = api.createNativeRange();
+
+        var rangeSupportsGetBoundingClientRect = false;
+        var elementSupportsGetBoundingClientRect = false;
+
+        if (api.features.implementsTextRange) {
+            return function(range) {
+                // We need a TextRange
+                var textRange = api.util.isTextRange(range.nativeRange) ?
+                    range.nativeRange : WrappedRange.rangeToTextRange(range);
+
+                var left = textRange.boundingLeft, top = textRange.boundingTop;
+                var width = textRange.boundingWidth, height = textRange.boundingHeight;
+                return {
+                    top: top,
+                    bottom: top + height,
+                    left: left,
+                    right: left + width,
+                    width: width,
+                    height: height
+                };
+            };
+
+        } else if (api.features.implementsDomRange) {
+            rangeSupportsGetBoundingClientRect = api.util.isHostMethod(testRange, "getBoundingClientRect");
+            api.features.rangeSupportsGetBoundingClientRect = rangeSupportsGetBoundingClientRect;
+
+
+            var createWrappedRange = function(range) {
+                return (range instanceof WrappedRange) ? range : new WrappedRange(range);
+            };
+
+            if (rangeSupportsGetBoundingClientRect) {
+                return function(range) {
+                    return createWrappedRange(range).nativeRange.getBoundingClientRect();
+                };
+            } else {
+                // Test that <span> elements support getBoundingClientRect
+                var span = document.createElement("span");
+                elementSupportsGetBoundingClientRect = api.util.isHostMethod(span, "getBoundingClientRect");
+
+                var getElementBoundingClientRect = elementSupportsGetBoundingClientRect ?
+                    function(el) {
+                        return el.getBoundingClientRect();
+                    } :
+
+                    // This implementation is very naive. There are many browser quirks that make it extremely
+                    // difficult to get accurate element coordinates in all situations
+                    function(el) {
+                        var x = 0, y = 0, offsetEl = el, width = el.offsetWidth, height = el.offsetHeight;
+                        while (offsetEl) {
+                            x += offsetEl.offsetLeft;
+                            y += offsetEl.offsetTop;
+                            offsetEl = offsetEl.offsetParent;
+                        }
+
+                        return {
+                            top: y,
+                            bottom: y + height,
+                            left: x,
+                            right: x + width,
+                            width: width,
+                            height: height
+                        };
+                    };
+
+                var getRectFromBoundaries = function(range) {
+                    range.splitBoundaries();
+                    var span = document.createElement("span");
+                    var workingRange = range.cloneRange();
+                    workingRange.collapse(true);
+                    workingRange.insertNode(span);
+                    var startRect = getElementBoundingClientRect(span);
+                    span.parentNode.removeChild(span);
+                    workingRange.collapseToPoint(range.endContainer, range.endOffset);
+                    workingRange.insertNode(span);
+                    var endRect = getElementBoundingClientRect(span);
+                    span.parentNode.removeChild(span);
+                    range.normalizeBoundaries();
+                    return mergeRects(startRect, endRect);
+                };
+
+                return function(range) {
+                    return getRectFromBoundaries(createWrappedRange(range));
+                };
+            }
+        }
+    })();
+
+    api.getRangeBoundingClientRect = getRangeBoundingClientRect;
+
+    api.rangePrototype.getBoundingClientRect = function() {
+        return getRangeBoundingClientRect(this);
+    };
+
+    (function() {
+        function createClientBoundaryPosGetter(isStart) {
+            return function() {
+                var boundaryRange = this.cloneRange();
+                boundaryRange.collapse(isStart);
+                var rect = getRangeBoundingClientRect(this);
+                return { left: rect.left, top: rect.top };
+            };
+        }
+
+        api.rangePrototype.getStartClientPos = createClientBoundaryPosGetter(true);
+        api.rangePrototype.getEndClientPos = createClientBoundaryPosGetter(false);
+    })();
+
+    api.selectionPrototype.getBoundingClientRect = function() {
+        for (var i = 0, rect = null, rangeRect; i < this.rangeCount; ++i) {
+            rangeRect = getRangeBoundingClientRect(this.getRangeAt(i));
+            rect = rect ? mergeRects(rect, rangeRect) : rangeRect;
+        }
+        return rect;
+    };
+});

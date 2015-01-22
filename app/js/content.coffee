@@ -29,10 +29,15 @@ class DapperDoe.Content.Text extends DapperDoe.Content
 		this.$el.attr('contenteditable','true')
 		this.events()
 
+		# Wrap content with p it plain text to prevent Firefox bug
+		if ((this.$el.is('p, div, blockquote')) and (this.$el.children().length == 0))
+			this.$el.wrapInner('<p></p>')
+
 	events: ->
-		this.$el.bind("focus", => this.showToolbar())
 		this.$el.bind('paste', (e) => this.handlePaste(e))
-		this.$el.bind('keydown', (e) => this.handleBrInChrome(e))
+		#this.$el.bind('keydown', (e) => this.handleBrInChrome(e))
+		this.$el.bind('dragover drop', (e) => this.preventDrag(e))
+		this.$el.bind('mouseup', () => window.app.textToolbar.show())
 
 	# Removes all tags when pasting to prevent bugs due to unexpected tags from other softwares and apps
 	handlePaste: (e) ->
@@ -44,14 +49,15 @@ class DapperDoe.Content.Text extends DapperDoe.Content
 		document.execCommand('insertHtml', false, temp.textContent)
 
 	# Handle breaklines in Chrome by inserting <br> tags instead of <div>
-	handleBrInChrome: (e) ->
-		if e.keyCode == 13
-			e.preventDefault()
-			e.stopPropagation()
-			document.execCommand('insertHTML', false, '<br/><br/>')
+	# handleBrInChrome: (e) ->
+	# 	if e.keyCode == 13
+	# 		e.preventDefault()
+	# 		e.stopPropagation()
+	# 		document.execCommand('insertHTML', false, '<br/>')
 
-	showToolbar: (e) ->
-		this.toolbar = new DapperDoe.Toolbar.Text({content: this})
+	preventDrag: (e) ->
+		e.preventDefault()
+		return false
 
 # Image content called on <img>
 class DapperDoe.Content.Image extends DapperDoe.Content
@@ -124,14 +130,34 @@ class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 
 	constructor: (options) ->
 		super(options)
-		this.content = options.content
-		window.app.view.removeToolbars()
 		this.$el.html(this.html)
 		$(window.app.topElement).append(this.$el)
+		this.toolbarWidth = this.$el.find('.dd_toolbar').width()
+		this.toolbarHeight = this.$el.find('.dd_toolbar').height()
+		this.$el.hide()
 		this.events()
 
 	events: ->
 		this.$el.find("button").bind("click", (e) => this.editText(e))
+
+	hide: ->
+		this.$el.hide()
+
+	show: ->
+		this.$el.hide()
+		boundary = rangy.getSelection().getRangeAt(0).getBoundingClientRect()
+		if(boundary.bottom > 0)
+			top = boundary.top - this.toolbarHeight - 10
+			left = boundary.left + (boundary.width/2) - (this.toolbarWidth/2)
+			if left < 10
+				left = 10
+			if (left + this.toolbarWidth) > ($(document).width() - 10)
+				left = $(document).width() - 10 - this.toolbarWidth
+
+			this.$el.find('.dd_toolbar').css('top', top)
+			this.$el.find('.dd_toolbar').css('left', left)
+			this.$el.find('.dd_toolbar:after').css('left', 0)
+			this.$el.show()
 
 	# Commands called when clicking on a toolbar button
 	editText: (e) =>
@@ -148,11 +174,12 @@ class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 			when "align-right" then document.execCommand('justifyRight', false, null)
 			when "link" then new DapperDoe.Modal.Url()
 			when "unlink" then document.execCommand('unlink', false, null)
-			when "list" then document.execCommand('insertUnorderedList', false, null)
 			when "clear"
 				document.execCommand('removeFormat', false, null)
 				document.execCommand('unlink', false, null)
 			when "undo" then document.execCommand('undo', false, null)
+
+		this.show()
 
 	# UI's DOM
 	html: ->
@@ -160,29 +187,24 @@ class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 			<button data-action='bold'><i class='fa fa-bold'></i></button>
 			<button data-action='italic'><i class='fa fa-italic'></i></button>
 			<button data-action='underline'><i class='fa fa-underline'></i></button>
-			<button data-action='text-color'><i class='fa fa-paint-brush'></i></button>
-			<button data-action='background-color'><i class='fa fa-tint'></i></button>
+			<button data-action='text-color'><i class='fa fa-tint'></i></button>
 			<button data-action='align-left'><i class='fa fa-align-left'></i></button>
 			<button data-action='align-center'><i class='fa fa-align-center'></i></button>
 			<button data-action='align-right'><i class='fa fa-align-right'></i></button>
 			<button data-action='link'><i class='fa fa-link'></i></button>
 			<button data-action='unlink'><i class='fa fa-unlink'></i></button>
-			<button data-action='list'><i class='fa fa-list-ul'></i></button>
 			<button data-action='clear'><i class='fa fa-eraser'></i></button>
 			<button data-action='undo'><i class='fa fa-undo'></i></button>
 		</div>")
 
-	applyForeColor: (color) ->
-		rangy.restoreSelection(app.lastSel)
+	applyForeColor: (color) =>
+		rangy.restoreSelection(window.app.lastSel)
 		document.execCommand('foreColor', false, color)
-
-	applyHiliteColor: (color) ->
-		rangy.restoreSelection(app.lastSel)
-		document.execCommand('hiliteColor', false, color)
 
 # Generic class for modals (used for links and colors for example)
 class DapperDoe.Modal
 	constructor: (options) ->
+		document.designMode = "off"
 		this.$el = this.html()
 		$(window.app.topElement).append(this.$el)
 		this.events()
@@ -229,8 +251,8 @@ class DapperDoe.Modal.Color extends DapperDoe.Modal
 	doAction: (e) ->
 		e.stopPropagation()
 		color = $(e.target).data('color')
-		this.callback(color)
 		this.closeModal(e)
+		this.callback(color)
 
 	colorLuminance: (hex, lum) ->
 		hex = String(hex).replace(/[^0-9a-f]/gi, '')

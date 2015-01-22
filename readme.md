@@ -40,14 +40,16 @@ Take a look at the file called `/bootstrap/snippets.html` in the example project
 	<div data-preview="snippets/jumbotron.png">
 		<div class="jumbotron">
       		<div class="container">
-        		<h1>Hello, world!</h1>
-        		<p>This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-        		<p><a class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a></p>
+        		<h1 class="dd_text">Hello, world!</h1>
+        		<p class="dd_text">This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+        		<p class="dd_text"><a class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a></p>
       		</div>
     	</div>
 	</div>
 
 You just need to add the attribute "data-preview" to make DapperDoe aware that this snippet must be added in the sidebar. The value of `data-preview` is the path to the snippet's image preview that will appear in the sidebar (typically a screenshot of the result, you can check the png files in `/bootstrap/snippets/` to see an example).
+
+In order to tell Dapper Doe that text tags can be edited, you mush add the `dd_text` class to them. For example `<h1 class="dd_text">Hello, world!</h1>` will trigger the text editor when text is selected.
 	
 ####Call DapperDoe
 

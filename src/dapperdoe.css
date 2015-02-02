@@ -77,7 +77,7 @@ body {
   color: #fff;
 }
 .dd_toolbar .dd_sub_toolbar .dd_toolbar_url .dd_url {
-  width: 91%;
+  width: 81%;
   float: left;
   color: #333;
   border: none;
@@ -85,6 +85,15 @@ body {
   padding: 3px 6px;
   height: 28px;
   outline: none;
+}
+.dd_toolbar .dd_sub_toolbar .dd_toolbar_url .dd_link_color {
+  width: 8%;
+  height: 28px;
+  border-radius: 2px;
+  background: #fff;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
 }
 .dd_toolbar .dd_sub_toolbar .dd_toolbar_url .dd_submit {
   width: 5%;
@@ -100,16 +109,6 @@ body {
 .dd_toolbar .dd_sub_toolbar .dd_toolbar_url .dd_url_options label {
   display: inline-block;
   margin: 2px 5px 0 0;
-}
-.dd_toolbar .dd_sub_toolbar .dd_toolbar_url .dd_url_options .dd_button_color {
-  width: 30px;
-  height: 15px;
-  border-radius: 2px;
-  background: #fff;
-  position: relative;
-  display: inline-block;
-  top: 2px;
-  cursor: pointer;
 }
 .dd_toolbar .dd_sub_toolbar .dd_toolbar_url .clearfix {
   clear: both;

@@ -39,6 +39,7 @@ class DapperDoe.Content.Text extends DapperDoe.Content
 		this.$el.bind('paste', (e) => this.handlePaste(e))
 		this.$el.bind('dragover drop', (e) => this.preventDrag(e))
 		this.$el.bind('mouseup', () => this.openToolbar())
+		this.$el.bind('keyup', () => this.openToolbar())
 
 	openToolbar: ->
 		window.app.textToolbar.hide()
@@ -282,18 +283,18 @@ class DapperDoe.TextSubToolbar.Color extends DapperDoe.TextSubToolbar
 class DapperDoe.TextSubToolbar.Url extends DapperDoe.TextSubToolbar
 	constructor: (options)->
 		super(options)
-		this.$el.find('.dd_button').bind('change', this.manageButtonColor)
-		this.$el.find('.dd_button_color').bind('click', this.manageButtonColor)
-		this.buttonColor = 'fff'
+		this.$el.find('.dd_link_color').bind('click', this.manageLinkColor)
+		this.linkColor = 'fff'
 
-	manageButtonColor: (e) =>
-		if(this.$el.find('.dd_button').is(':checked'))
-			window.app.textSubToolbarColor.show((color) ->
-				window.app.textSubToolbarUrl.buttonColor = color
-				this.$el.find('.dd_button_color').css('background', '#' + color)
-			, true)
-		else
+	manageLinkColor: (e) =>
+		if(window.app.textSubToolbarColor.$el.find('.dd_toolbar_color').is(':visible'))
 			window.app.textSubToolbarColor.hide()
+		else
+			window.app.textSubToolbarColor.show((color) ->
+				window.app.textSubToolbarUrl.linkColor = color
+				this.$el.find('.dd_link_color').css('background', '#' + color)
+			, true)
+			
 
 	doAction: (e) ->
 		e.stopPropagation()
@@ -304,8 +305,11 @@ class DapperDoe.TextSubToolbar.Url extends DapperDoe.TextSubToolbar
 		rangy.restoreSelection(app.lastSel)
 		this.link = document.execCommand('createLink', false, this.url)
 		rangy.getSelection().getRangeAt(0).commonAncestorContainer.parentNode.setAttribute("target", "_blank") if this.blank
-		rangy.getSelection().getRangeAt(0).commonAncestorContainer.parentNode.setAttribute("style", "background: #" + this.buttonColor + ";")
-
+		
+		if this.button
+			rangy.getSelection().getRangeAt(0).commonAncestorContainer.parentNode.setAttribute("style", "background: #" + this.linkColor + ";")
+		else
+			rangy.getSelection().getRangeAt(0).commonAncestorContainer.parentNode.setAttribute("style", "color: #" + this.linkColor + ";")
 
 		if this.button
 			cssClass = window.app.buttonClass
@@ -324,15 +328,16 @@ class DapperDoe.TextSubToolbar.Url extends DapperDoe.TextSubToolbar
 		super('url', -> 
 			console.log('')
 		, true)
+		this.$el.find('.dd_link_color').css('background', '#fff')
 
 	html: ->
 		$html = $("<div class='dd_sub_toolbar_content dd_toolbar_url'>
 			<input type='text' placeholder='Url' class='dd_url' />
+			<span class='dd_link_color'></span>
 			<div class='dd_submit'><i class='fa fa-check'></i></div>
 			<div class='clearfix'></div>
 			<div class='dd_url_options'>
 				<label>_blank <input type='checkbox' class='dd_blank'/></label>
-				<span class='dd_button_color'></span>
 				<label>Button <input type='checkbox' class='dd_button'/></label>
 			</div>
 		</div>")

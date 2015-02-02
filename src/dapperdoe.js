@@ -366,7 +366,12 @@
           return _this.preventDrag(e);
         };
       })(this));
-      return this.$el.bind('mouseup', (function(_this) {
+      this.$el.bind('mouseup', (function(_this) {
+        return function() {
+          return _this.openToolbar();
+        };
+      })(this));
+      return this.$el.bind('keyup', (function(_this) {
         return function() {
           return _this.openToolbar();
         };
@@ -727,21 +732,20 @@
     __extends(Url, _super);
 
     function Url(options) {
-      this.manageButtonColor = __bind(this.manageButtonColor, this);
+      this.manageLinkColor = __bind(this.manageLinkColor, this);
       Url.__super__.constructor.call(this, options);
-      this.$el.find('.dd_button').bind('change', this.manageButtonColor);
-      this.$el.find('.dd_button_color').bind('click', this.manageButtonColor);
-      this.buttonColor = 'fff';
+      this.$el.find('.dd_link_color').bind('click', this.manageLinkColor);
+      this.linkColor = 'fff';
     }
 
-    Url.prototype.manageButtonColor = function(e) {
-      if (this.$el.find('.dd_button').is(':checked')) {
-        return window.app.textSubToolbarColor.show(function(color) {
-          window.app.textSubToolbarUrl.buttonColor = color;
-          return this.$el.find('.dd_button_color').css('background', '#' + color);
-        }, true);
-      } else {
+    Url.prototype.manageLinkColor = function(e) {
+      if (window.app.textSubToolbarColor.$el.find('.dd_toolbar_color').is(':visible')) {
         return window.app.textSubToolbarColor.hide();
+      } else {
+        return window.app.textSubToolbarColor.show(function(color) {
+          window.app.textSubToolbarUrl.linkColor = color;
+          return this.$el.find('.dd_link_color').css('background', '#' + color);
+        }, true);
       }
     };
 
@@ -756,7 +760,11 @@
       if (this.blank) {
         rangy.getSelection().getRangeAt(0).commonAncestorContainer.parentNode.setAttribute("target", "_blank");
       }
-      rangy.getSelection().getRangeAt(0).commonAncestorContainer.parentNode.setAttribute("style", "background: #" + this.buttonColor + ";");
+      if (this.button) {
+        rangy.getSelection().getRangeAt(0).commonAncestorContainer.parentNode.setAttribute("style", "background: #" + this.linkColor + ";");
+      } else {
+        rangy.getSelection().getRangeAt(0).commonAncestorContainer.parentNode.setAttribute("style", "color: #" + this.linkColor + ";");
+      }
       if (this.button) {
         cssClass = window.app.buttonClass;
         _ref = window.app.buttonOptions;
@@ -775,14 +783,15 @@
 
     Url.prototype.show = function() {
       $('.dd_toolbar button[data-action=link]').addClass('active');
-      return Url.__super__.show.call(this, 'url', function() {
+      Url.__super__.show.call(this, 'url', function() {
         return console.log('');
       }, true);
+      return this.$el.find('.dd_link_color').css('background', '#fff');
     };
 
     Url.prototype.html = function() {
       var $html, key, klass, name, option, _ref;
-      $html = $("<div class='dd_sub_toolbar_content dd_toolbar_url'> <input type='text' placeholder='Url' class='dd_url' /> <div class='dd_submit'><i class='fa fa-check'></i></div> <div class='clearfix'></div> <div class='dd_url_options'> <label>_blank <input type='checkbox' class='dd_blank'/></label> <span class='dd_button_color'></span> <label>Button <input type='checkbox' class='dd_button'/></label> </div> </div>");
+      $html = $("<div class='dd_sub_toolbar_content dd_toolbar_url'> <input type='text' placeholder='Url' class='dd_url' /> <span class='dd_link_color'></span> <div class='dd_submit'><i class='fa fa-check'></i></div> <div class='clearfix'></div> <div class='dd_url_options'> <label>_blank <input type='checkbox' class='dd_blank'/></label> <label>Button <input type='checkbox' class='dd_button'/></label> </div> </div>");
       _ref = window.app.buttonOptions;
       for (key in _ref) {
         option = _ref[key];

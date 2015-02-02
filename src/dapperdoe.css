@@ -1,4 +1,4 @@
-/*! Dapper Doe - v0.1.0 - 2015-01-22
+/*! Dapper Doe - v0.1.0 - 2015-02-02
 * https://github.com/pascalmerme/dapperdoe
 * Copyright (c) 2015 Pascal Merme; Licensed MIT */
 body {
@@ -47,6 +47,7 @@ body {
   text-align: center;
   border-radius: 3px;
   background: #333;
+  z-index: 1000;
 }
 .dd_toolbar button {
   background: none;
@@ -99,6 +100,16 @@ body {
 .dd_toolbar .dd_sub_toolbar .dd_toolbar_url .dd_url_options label {
   display: inline-block;
   margin: 2px 5px 0 0;
+}
+.dd_toolbar .dd_sub_toolbar .dd_toolbar_url .dd_url_options .dd_button_color {
+  width: 30px;
+  height: 15px;
+  border-radius: 2px;
+  background: #fff;
+  position: relative;
+  display: inline-block;
+  top: 2px;
+  cursor: pointer;
 }
 .dd_toolbar .dd_sub_toolbar .dd_toolbar_url .clearfix {
   clear: both;

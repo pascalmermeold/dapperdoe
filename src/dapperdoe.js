@@ -1,4 +1,4 @@
-/*! Dapper Doe - v0.1.0 - 2015-01-22
+/*! Dapper Doe - v0.1.0 - 2015-02-02
 * https://github.com/pascalmerme/dapperdoe
 * Copyright (c) 2015 Pascal Merme; Licensed MIT */
 (function() {
@@ -550,7 +550,7 @@
         if ((left + this.toolbarWidth) > ($(document).width() - 10)) {
           left = $(document).width() - 10 - this.toolbarWidth;
         }
-        this.$el.find('.dd_toolbar').css('bottom', $(document).height() - top - $(window).scrollTop());
+        this.$el.find('.dd_toolbar').css('bottom', $(window.app.topElement).height() - top - $(window).scrollTop());
         this.$el.find('.dd_toolbar').css('left', left);
         return this.$el.show();
       }
@@ -636,9 +636,11 @@
       })(this));
     };
 
-    TextSubToolbar.prototype.show = function(type, callback) {
+    TextSubToolbar.prototype.show = function(type, callback, hideExisting) {
       this.callback = callback;
-      this.$el.find('.dd_sub_toolbar_content').hide();
+      if (hideExisting) {
+        this.$el.find('.dd_sub_toolbar_content').hide();
+      }
       this.$el.find(".dd_toolbar_" + type).show();
       return this.$el.slideDown(200);
     };
@@ -693,9 +695,15 @@
       return this.callback(color);
     };
 
-    Color.prototype.show = function(callback) {
-      Color.__super__.show.call(this, 'color', callback);
-      return $('.dd_toolbar button[data-action=text-color]').addClass('active');
+    Color.prototype.hide = function() {
+      return this.$el.find('.dd_toolbar_color').hide();
+    };
+
+    Color.prototype.show = function(callback, isSubSub) {
+      Color.__super__.show.call(this, 'color', callback, !isSubSub);
+      if (!isSubSub) {
+        return $('.dd_toolbar button[data-action=text-color]').addClass('active');
+      }
     };
 
     Color.prototype.html = function() {
@@ -719,8 +727,23 @@
     __extends(Url, _super);
 
     function Url(options) {
+      this.manageButtonColor = __bind(this.manageButtonColor, this);
       Url.__super__.constructor.call(this, options);
+      this.$el.find('.dd_button').bind('change', this.manageButtonColor);
+      this.$el.find('.dd_button_color').bind('click', this.manageButtonColor);
+      this.buttonColor = 'fff';
     }
+
+    Url.prototype.manageButtonColor = function(e) {
+      if (this.$el.find('.dd_button').is(':checked')) {
+        return window.app.textSubToolbarColor.show(function(color) {
+          window.app.textSubToolbarUrl.buttonColor = color;
+          return this.$el.find('.dd_button_color').css('background', '#' + color);
+        }, true);
+      } else {
+        return window.app.textSubToolbarColor.hide();
+      }
+    };
 
     Url.prototype.doAction = function(e) {
       var cssApplier, cssClass, key, option, _ref;
@@ -733,6 +756,7 @@
       if (this.blank) {
         rangy.getSelection().getRangeAt(0).commonAncestorContainer.parentNode.setAttribute("target", "_blank");
       }
+      rangy.getSelection().getRangeAt(0).commonAncestorContainer.parentNode.setAttribute("style", "background: #" + this.buttonColor + ";");
       if (this.button) {
         cssClass = window.app.buttonClass;
         _ref = window.app.buttonOptions;
@@ -753,12 +777,12 @@
       $('.dd_toolbar button[data-action=link]').addClass('active');
       return Url.__super__.show.call(this, 'url', function() {
         return console.log('');
-      });
+      }, true);
     };
 
     Url.prototype.html = function() {
       var $html, key, klass, name, option, _ref;
-      $html = $("<div class='dd_sub_toolbar_content dd_toolbar_url'> <input type='text' placeholder='Url' class='dd_url' /> <div class='dd_submit'><i class='fa fa-check'></i></div> <div class='clearfix'></div> <div class='dd_url_options'> <label>_blank <input type='checkbox' class='dd_blank'/></label> <label>Button <input type='checkbox' class='dd_button'/></label> </div> </div>");
+      $html = $("<div class='dd_sub_toolbar_content dd_toolbar_url'> <input type='text' placeholder='Url' class='dd_url' /> <div class='dd_submit'><i class='fa fa-check'></i></div> <div class='clearfix'></div> <div class='dd_url_options'> <label>_blank <input type='checkbox' class='dd_blank'/></label> <span class='dd_button_color'></span> <label>Button <input type='checkbox' class='dd_button'/></label> </div> </div>");
       _ref = window.app.buttonOptions;
       for (key in _ref) {
         option = _ref[key];
@@ -1005,8 +1029,8 @@
         collection: this.template.snippetsPreviews
       });
       this.textToolbar = new DapperDoe.Toolbar.Text;
-      this.textSubToolbarColor = new DapperDoe.TextSubToolbar.Color;
-      return this.textSubToolbarUrl = new DapperDoe.TextSubToolbar.Url;
+      this.textSubToolbarUrl = new DapperDoe.TextSubToolbar.Url;
+      return this.textSubToolbarColor = new DapperDoe.TextSubToolbar.Color;
     };
 
     App.prototype.initTopElement = function() {

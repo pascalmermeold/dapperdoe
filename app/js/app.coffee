@@ -75,8 +75,8 @@ class DapperDoe.App
     this.sidebar = new DapperDoe.Sidebar
       collection: this.template.snippetsPreviews
     this.textToolbar = new DapperDoe.Toolbar.Text
-    this.textSubToolbarColor = new DapperDoe.TextSubToolbar.Color
     this.textSubToolbarUrl = new DapperDoe.TextSubToolbar.Url
+    this.textSubToolbarColor = new DapperDoe.TextSubToolbar.Color
 
   # Parses the exsiting html
   initTopElement: ->

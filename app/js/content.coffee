@@ -158,7 +158,7 @@ class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 			if (left + this.toolbarWidth) > ($(document).width() - 10)
 				left = $(document).width() - 10 - this.toolbarWidth
 
-			this.$el.find('.dd_toolbar').css('bottom', $(document).height() - top - $(window).scrollTop())
+			this.$el.find('.dd_toolbar').css('bottom', $(window.app.topElement).height() - top - $(window).scrollTop())
 			this.$el.find('.dd_toolbar').css('left', left)
 			this.$el.show()
 
@@ -219,9 +219,10 @@ class DapperDoe.TextSubToolbar
 		this.$el.bind("click", (e) => this.stopPropagation(e))
 		this.$el.find(".dd_submit").bind("click", (e) => this.doAction(e))
 
-	show: (type,callback)->
+	show: (type,callback,hideExisting) ->
 		this.callback = callback
-		this.$el.find('.dd_sub_toolbar_content').hide()
+		if hideExisting
+			this.$el.find('.dd_sub_toolbar_content').hide()
 		this.$el.find(".dd_toolbar_#{type}").show()
 		this.$el.slideDown(200)
 
@@ -256,9 +257,13 @@ class DapperDoe.TextSubToolbar.Color extends DapperDoe.TextSubToolbar
 		this.hide(e)
 		this.callback(color)
 
-	show: (callback) ->
-		super('color', callback)
-		$('.dd_toolbar button[data-action=text-color]').addClass('active')
+	hide: ->
+		this.$el.find('.dd_toolbar_color').hide()
+
+	show: (callback, isSubSub) ->
+		super('color', callback, !isSubSub)
+		if !isSubSub
+			$('.dd_toolbar button[data-action=text-color]').addClass('active')
 
 	html: =>
 		$html = $("<div class='dd_sub_toolbar_content dd_toolbar_color'></div>")
@@ -277,6 +282,18 @@ class DapperDoe.TextSubToolbar.Color extends DapperDoe.TextSubToolbar
 class DapperDoe.TextSubToolbar.Url extends DapperDoe.TextSubToolbar
 	constructor: (options)->
 		super(options)
+		this.$el.find('.dd_button').bind('change', this.manageButtonColor)
+		this.$el.find('.dd_button_color').bind('click', this.manageButtonColor)
+		this.buttonColor = 'fff'
+
+	manageButtonColor: (e) =>
+		if(this.$el.find('.dd_button').is(':checked'))
+			window.app.textSubToolbarColor.show((color) ->
+				window.app.textSubToolbarUrl.buttonColor = color
+				this.$el.find('.dd_button_color').css('background', '#' + color)
+			, true)
+		else
+			window.app.textSubToolbarColor.hide()
 
 	doAction: (e) ->
 		e.stopPropagation()
@@ -287,6 +304,7 @@ class DapperDoe.TextSubToolbar.Url extends DapperDoe.TextSubToolbar
 		rangy.restoreSelection(app.lastSel)
 		this.link = document.execCommand('createLink', false, this.url)
 		rangy.getSelection().getRangeAt(0).commonAncestorContainer.parentNode.setAttribute("target", "_blank") if this.blank
+		rangy.getSelection().getRangeAt(0).commonAncestorContainer.parentNode.setAttribute("style", "background: #" + this.buttonColor + ";")
 
 
 		if this.button
@@ -303,7 +321,9 @@ class DapperDoe.TextSubToolbar.Url extends DapperDoe.TextSubToolbar
 
 	show: () ->
 		$('.dd_toolbar button[data-action=link]').addClass('active')
-		super('url', -> console.log(''))
+		super('url', -> 
+			console.log('')
+		, true)
 
 	html: ->
 		$html = $("<div class='dd_sub_toolbar_content dd_toolbar_url'>
@@ -312,6 +332,7 @@ class DapperDoe.TextSubToolbar.Url extends DapperDoe.TextSubToolbar
 			<div class='clearfix'></div>
 			<div class='dd_url_options'>
 				<label>_blank <input type='checkbox' class='dd_blank'/></label>
+				<span class='dd_button_color'></span>
 				<label>Button <input type='checkbox' class='dd_button'/></label>
 			</div>
 		</div>")

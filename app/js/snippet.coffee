@@ -83,8 +83,9 @@ class DapperDoe.Snippet
     this.$el.find(".dd_tools .snippet_settings").bind("click", => this.toggleSettings())
     this.$el.find(".dd_snippet_settings").bind("click", => this.hideSettings())
     this.$el.find(".dd_image_background").bind("click", (e) => this.imageBackgroundFileSelector(e))
-    this.$el.find(".image_input").bind("click", (e) => e.stopPropagation())
+    this.$el.find(".image_input, .dd_snippet_padding").bind("click", (e) => e.stopPropagation())
     this.$el.find(".image_input").bind("change", (e) => this.uploadBackgroundImage(e))
+    this.$el.find(".dd_snippet_padding").bind("input", (e) => this.updatePadding(e))
 
   toggleSettings: ->
     if(this.$el.find('.dd_snippet_settings').is(':visible'))
@@ -109,7 +110,7 @@ class DapperDoe.Snippet
     for baseColor in window.app.colorPalette
       this.$el.find('.dd_snippet_settings .dd_background_manager').append("<span class='color' style='background: ##{baseColor};' data-color='#{baseColor}'></span>")
     this.$el.find('.dd_snippet_settings .dd_background_manager').append("<span class='dd_image_background'><i class='fa fa-picture-o'></i></span><input type='file' class='image_input' style='display: none;'/>")
-
+    this.$el.find('.dd_snippet_settings .dd_background_manager').append("<br/><input type=range min=0 max=60 value=0 class='dd_snippet_padding'>")
   showSettings: ->
     this.$el.find('.dd_snippet_settings').show(200)
 
@@ -145,6 +146,11 @@ class DapperDoe.Snippet
         )
       else
         alert('Type de fichier non autorisé')
+
+  updatePadding: (e) ->
+    e.preventDefault()
+    e.stopPropagation()
+    this.$el.css('padding', $(e.target).val() + 'px 0')
 
   # Makes snippet's content editable by creating new content objects
   parseSnippet: ->

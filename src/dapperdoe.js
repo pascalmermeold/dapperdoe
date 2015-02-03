@@ -170,14 +170,19 @@
           return _this.imageBackgroundFileSelector(e);
         };
       })(this));
-      this.$el.find(".image_input").bind("click", (function(_this) {
+      this.$el.find(".image_input, .dd_snippet_padding").bind("click", (function(_this) {
         return function(e) {
           return e.stopPropagation();
         };
       })(this));
-      return this.$el.find(".image_input").bind("change", (function(_this) {
+      this.$el.find(".image_input").bind("change", (function(_this) {
         return function(e) {
           return _this.uploadBackgroundImage(e);
+        };
+      })(this));
+      return this.$el.find(".dd_snippet_padding").bind("input", (function(_this) {
+        return function(e) {
+          return _this.updatePadding(e);
         };
       })(this));
     };
@@ -207,7 +212,8 @@
         baseColor = _ref[_i];
         this.$el.find('.dd_snippet_settings .dd_background_manager').append("<span class='color' style='background: #" + baseColor + ";' data-color='" + baseColor + "'></span>");
       }
-      return this.$el.find('.dd_snippet_settings .dd_background_manager').append("<span class='dd_image_background'><i class='fa fa-picture-o'></i></span><input type='file' class='image_input' style='display: none;'/>");
+      this.$el.find('.dd_snippet_settings .dd_background_manager').append("<span class='dd_image_background'><i class='fa fa-picture-o'></i></span><input type='file' class='image_input' style='display: none;'/>");
+      return this.$el.find('.dd_snippet_settings .dd_background_manager').append("<br/><input type=range min=0 max=60 value=0 class='dd_snippet_padding'>");
     };
 
     Snippet.prototype.showSettings = function() {
@@ -257,6 +263,12 @@
           return alert('Type de fichier non autorisé');
         }
       }
+    };
+
+    Snippet.prototype.updatePadding = function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      return this.$el.css('padding', $(e.target).val() + 'px 0');
     };
 
     Snippet.prototype.parseSnippet = function() {

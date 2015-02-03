@@ -218,7 +218,7 @@ body {
   text-align: center;
   width: 100%;
 }
-.dd_top_element .dd_snippet .dd_snippet_settings .dd_background_manager span {
+.dd_top_element .dd_snippet .dd_snippet_settings .dd_background_manager > span {
   background: #ddd;
   color: #333;
   display: inline-block;
@@ -233,6 +233,11 @@ body {
   margin-top: -10px;
   position: relative;
   top: -12px;
+}
+.dd_top_element .dd_snippet .dd_snippet_settings .dd_background_manager .dd_snippet_padding {
+  position: relative;
+  display: inline-block;
+  width: 150px;
 }
 .dd_top_element .dd_snippet .dd_image_wrapper {
   position: relative;

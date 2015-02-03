@@ -84,7 +84,7 @@ You can customize DapperDoe UI with some options :
 
 A default color palette is provided by default. You can customize it by giving DapperDoe the base colors you want to use :
 
-	$('#container').dapperDoe({
+	window.app = new DapperDoe.App({
 		...,
 		colorPalette: {
         	'eb6566' : "Cayenne",
@@ -109,7 +109,7 @@ The palette will automatically include lighter and darker versions of these base
 
 The default class used for buttons is `.btn`. You can customize this class with the `buttonClass` option. You can then add sets of options (with corresponding classes) for buttons with `buttonOptions`.
 
-	$('#container').dapperDoe({
+	window.app = new DapperDoe.App({
 		...,
 		buttonClass: 'btn',
 		buttonOptions: {

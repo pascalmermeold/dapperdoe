@@ -78,29 +78,73 @@ class DapperDoe.Snippet
   events: ->
     this.$el.bind("mouseover", => this.showTools())
     this.$el.bind("mouseleave", => this.hideTools())
-    this.$el.find(".snippet_destroyer").bind("click", => this.destroy())
+    this.$el.find(".dd_tools .snippet_destroyer").bind("click", => this.destroy())
     this.$el.find(".color").bind("click", (e) => this.changeColor(e))
+    this.$el.find(".dd_tools .snippet_settings").bind("click", => this.toggleSettings())
+    this.$el.find(".dd_snippet_settings").bind("click", => this.hideSettings())
+    this.$el.find(".dd_image_background").bind("click", (e) => this.imageBackgroundFileSelector(e))
+    this.$el.find(".image_input").bind("click", (e) => e.stopPropagation())
+    this.$el.find(".image_input").bind("change", (e) => this.uploadBackgroundImage(e))
+
+  toggleSettings: ->
+    if(this.$el.find('.dd_snippet_settings').is(':visible'))
+      this.hideSettings()
+    else
+      this.showSettings()
 
   showTools: ->
-    this.$el.find('.tool').show()
+    this.$el.find('.dd_tool').show()
 
   hideTools: ->
-    this.$el.find('.tool').hide()
+    this.$el.find('.dd_tool').hide()
 
   # Snippet's UI DOM
   addTools: ->
-    this.$el.append("<div class='tools dd_ui'>
-      <div class='tool snippet_mover'><i class='fa fa-arrows'></i></div>
-      <div class='tool snippet_destroyer'><i class='fa fa-trash'></i></div>
+    this.$el.append("<div class='dd_tools dd_ui'>
+      <div class='dd_tool snippet_mover'><i class='fa fa-arrows'></i></div>
+      <div class='dd_tool snippet_settings'><i class='fa fa-adjust'></i></div>
+      <div class='dd_tool snippet_destroyer'><i class='fa fa-trash'></i></div>
     </div>")
+    this.$el.append("<div class='dd_snippet_settings'><div class='dd_background_manager'></div></div>")
     for baseColor in window.app.colorPalette
-      this.$el.find('.tools').append("<span class='color tool' style='background: ##{baseColor};' data-color='#{baseColor}'></span>")
+      this.$el.find('.dd_snippet_settings .dd_background_manager').append("<span class='color' style='background: ##{baseColor};' data-color='#{baseColor}'></span>")
+    this.$el.find('.dd_snippet_settings .dd_background_manager').append("<span class='dd_image_background'><i class='fa fa-picture-o'></i></span><input type='file' class='image_input' style='display: none;'/>")
+
+  showSettings: ->
+    this.$el.find('.dd_snippet_settings').show(200)
+
+  hideSettings: ->
+    this.$el.find('.dd_snippet_settings').hide(100)
 
   changeColor: (e) =>
-    this.$el.animate({'backgroundColor': '#' + $(e.target).data('color')}, 200)
+    this.$el.css('background', '#' + $(e.target).data('color'))
+    this.hideSettings()
 
-  settings: ->
-    this.backgroundManager.show()
+  imageBackgroundFileSelector: (e) ->
+    e.stopPropagation()
+    this.$el.find('.image_input').trigger("click")
+
+  uploadBackgroundImage: (e) ->
+    if e.target.files and e.target.files[0]
+      file = e.target.files[0]
+
+      if file.type.match('image.*')
+        reader = new FileReader()
+        reader.onload = (o) =>
+          this.$el.css('background', 'url(' + o.target.result + ') no-repeat center center', 200)
+        reader.readAsDataURL(file)
+      
+      if window.FormData
+        formdata = new FormData()
+        formdata.append('source',file)
+        window.app.saveImageCallback(formdata, (url) =>
+          if url
+            this.$el.css('background', 'url(' + url + ') no-repeat center center')
+            this.$el.css('background-size', 'cover')
+          this.hideSettings()
+        )
+      else
+        alert('Type de fichier non autorisé')
 
   # Makes snippet's content editable by creating new content objects
   parseSnippet: ->

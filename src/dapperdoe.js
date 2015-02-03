@@ -1,4 +1,4 @@
-/*! Dapper Doe - v0.1.0 - 2015-02-02
+/*! Dapper Doe - v0.1.0 - 2015-02-03
 * https://github.com/pascalmerme/dapperdoe
 * Copyright (c) 2015 Pascal Merme; Licensed MIT */
 (function() {
@@ -145,46 +145,118 @@
           return _this.hideTools();
         };
       })(this));
-      this.$el.find(".snippet_destroyer").bind("click", (function(_this) {
+      this.$el.find(".dd_tools .snippet_destroyer").bind("click", (function(_this) {
         return function() {
           return _this.destroy();
         };
       })(this));
-      return this.$el.find(".color").bind("click", (function(_this) {
+      this.$el.find(".color").bind("click", (function(_this) {
         return function(e) {
           return _this.changeColor(e);
         };
       })(this));
+      this.$el.find(".dd_tools .snippet_settings").bind("click", (function(_this) {
+        return function() {
+          return _this.toggleSettings();
+        };
+      })(this));
+      this.$el.find(".dd_snippet_settings").bind("click", (function(_this) {
+        return function() {
+          return _this.hideSettings();
+        };
+      })(this));
+      this.$el.find(".dd_image_background").bind("click", (function(_this) {
+        return function(e) {
+          return _this.imageBackgroundFileSelector(e);
+        };
+      })(this));
+      this.$el.find(".image_input").bind("click", (function(_this) {
+        return function(e) {
+          return e.stopPropagation();
+        };
+      })(this));
+      return this.$el.find(".image_input").bind("change", (function(_this) {
+        return function(e) {
+          return _this.uploadBackgroundImage(e);
+        };
+      })(this));
+    };
+
+    Snippet.prototype.toggleSettings = function() {
+      if (this.$el.find('.dd_snippet_settings').is(':visible')) {
+        return this.hideSettings();
+      } else {
+        return this.showSettings();
+      }
     };
 
     Snippet.prototype.showTools = function() {
-      return this.$el.find('.tool').show();
+      return this.$el.find('.dd_tool').show();
     };
 
     Snippet.prototype.hideTools = function() {
-      return this.$el.find('.tool').hide();
+      return this.$el.find('.dd_tool').hide();
     };
 
     Snippet.prototype.addTools = function() {
-      var baseColor, _i, _len, _ref, _results;
-      this.$el.append("<div class='tools dd_ui'> <div class='tool snippet_mover'><i class='fa fa-arrows'></i></div> <div class='tool snippet_destroyer'><i class='fa fa-trash'></i></div> </div>");
+      var baseColor, _i, _len, _ref;
+      this.$el.append("<div class='dd_tools dd_ui'> <div class='dd_tool snippet_mover'><i class='fa fa-arrows'></i></div> <div class='dd_tool snippet_settings'><i class='fa fa-adjust'></i></div> <div class='dd_tool snippet_destroyer'><i class='fa fa-trash'></i></div> </div>");
+      this.$el.append("<div class='dd_snippet_settings'><div class='dd_background_manager'></div></div>");
       _ref = window.app.colorPalette;
-      _results = [];
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         baseColor = _ref[_i];
-        _results.push(this.$el.find('.tools').append("<span class='color tool' style='background: #" + baseColor + ";' data-color='" + baseColor + "'></span>"));
+        this.$el.find('.dd_snippet_settings .dd_background_manager').append("<span class='color' style='background: #" + baseColor + ";' data-color='" + baseColor + "'></span>");
       }
-      return _results;
+      return this.$el.find('.dd_snippet_settings .dd_background_manager').append("<span class='dd_image_background'><i class='fa fa-picture-o'></i></span><input type='file' class='image_input' style='display: none;'/>");
+    };
+
+    Snippet.prototype.showSettings = function() {
+      return this.$el.find('.dd_snippet_settings').show(200);
+    };
+
+    Snippet.prototype.hideSettings = function() {
+      return this.$el.find('.dd_snippet_settings').hide(100);
     };
 
     Snippet.prototype.changeColor = function(e) {
-      return this.$el.animate({
-        'backgroundColor': '#' + $(e.target).data('color')
-      }, 200);
+      this.$el.css('background', '#' + $(e.target).data('color'));
+      return this.hideSettings();
     };
 
-    Snippet.prototype.settings = function() {
-      return this.backgroundManager.show();
+    Snippet.prototype.imageBackgroundFileSelector = function(e) {
+      e.stopPropagation();
+      return this.$el.find('.image_input').trigger("click");
+    };
+
+    Snippet.prototype.uploadBackgroundImage = function(e) {
+      var file, formdata, reader;
+      if (e.target.files && e.target.files[0]) {
+        file = e.target.files[0];
+        if (file.type.match('image.*')) {
+          reader = new FileReader();
+          reader.onload = (function(_this) {
+            return function(o) {
+              return _this.$el.css('background', 'url(' + o.target.result + ') no-repeat center center', 200);
+            };
+          })(this);
+          reader.readAsDataURL(file);
+        }
+        if (window.FormData) {
+          formdata = new FormData();
+          formdata.append('source', file);
+          return window.app.saveImageCallback(formdata, (function(_this) {
+            return function(url) {
+              if (url) {
+                _this.$el.css('background', 'url(' + url + ') no-repeat center center');
+                _this.$el.css('background-size', 'cover');
+              }
+              return _this.hideSettings();
+            };
+          })(this));
+        } else {
+          return alert('Type de fichier non autorisé');
+        }
+      }
     };
 
     Snippet.prototype.parseSnippet = function() {

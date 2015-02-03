@@ -1,4 +1,4 @@
-/*! Dapper Doe - v0.1.0 - 2015-02-02
+/*! Dapper Doe - v0.1.0 - 2015-02-03
 * https://github.com/pascalmerme/dapperdoe
 * Copyright (c) 2015 Pascal Merme; Licensed MIT */
 body {
@@ -174,13 +174,12 @@ body {
 .dd_top_element .dd_snippet .dd_content:hover {
   box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.2);
 }
-.dd_top_element .dd_snippet .tools {
+.dd_top_element .dd_snippet > .dd_tools {
   position: absolute;
   top: 5px;
   left: 5px;
-  width: 100%;
 }
-.dd_top_element .dd_snippet .tools .tool {
+.dd_top_element .dd_snippet > .dd_tools .dd_tool {
   float: left;
   font-size: 20px;
   text-align: center;
@@ -194,36 +193,46 @@ body {
   height: 36px;
   line-height: 36px;
   cursor: pointer;
+  clear: both;
 }
-.dd_top_element .dd_snippet .tools .snippet_mover {
+.dd_top_element .dd_snippet > .dd_tools .snippet_mover {
   cursor: move;
 }
-.dd_top_element .dd_snippet .tools .snippet_destroyer {
+.dd_top_element .dd_snippet > .dd_tools .snippet_destroyer {
   cursor: pointer;
 }
-.dd_top_element .dd_snippet .tools .dd_snippet_settings_wrapper {
-  position: relative;
-  width: 100%;
-}
-.dd_top_element .dd_snippet .tools .dd_snippet_settings_wrapper .dd_background_manager {
-  background: #333;
-  border-radius: 36px;
-  display: none;
+.dd_top_element .dd_snippet .dd_snippet_settings {
   position: absolute;
-  padding: 0;
-  margin: 0;
+  height: 30px;
+  width: 100%;
+  height: 100%;
+  display: none;
+  background: rgba(0, 0, 0, 0.7);
   top: 0;
-  left: 44px;
+  left: 0;
+}
+.dd_top_element .dd_snippet .dd_snippet_settings .dd_background_manager {
+  position: absolute;
+  top: 50%;
+  margin-top: -18px;
+  text-align: center;
   width: 100%;
 }
-.dd_top_element .dd_snippet .tools .dd_snippet_settings_wrapper .dd_background_manager span {
+.dd_top_element .dd_snippet .dd_snippet_settings .dd_background_manager span {
+  background: #ddd;
+  color: #333;
   display: inline-block;
-  width: 28px;
-  height: 28px;
-  line-height: 32px;
-  border-radius: 32px;
+  width: 36px;
+  height: 36px;
+  line-height: 36px;
+  border-radius: 36px;
   margin: 4px 2px 0 2px;
   cursor: pointer;
+}
+.dd_top_element .dd_snippet .dd_snippet_settings .dd_background_manager .dd_image_background {
+  margin-top: -10px;
+  position: relative;
+  top: -12px;
 }
 .dd_top_element .dd_snippet .dd_image_wrapper {
   position: relative;

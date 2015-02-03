@@ -1061,7 +1061,7 @@
       var settings;
       settings = {
         buttonClass: 'btn',
-        colorPalette: ['eb6566', 'f4794d', 'fbd546', '599e7f', '3e8871', '618eb1', '0d6eb2', '595d8e', 'b172ab', '792360', 'ac8b66', '8b9291', 'ffffff'],
+        colorPalette: ['eb6566', 'f4794d', 'fbd546', '599e7f', '3e8871', '618eb1', '0d6eb2', '595d8e', 'b172ab', '792360', 'ac8b66', '8b9291', 'eeeeee', 'ffffff'],
         saveImageCallback: function(formdata, callback) {
           console.log(formdata);
           return callback(false);

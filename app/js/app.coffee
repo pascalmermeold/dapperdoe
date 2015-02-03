@@ -23,6 +23,7 @@ class DapperDoe.App
         '792360'
         'ac8b66'
         '8b9291'
+        'eeeeee'
         'ffffff'
       ]
 

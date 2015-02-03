@@ -4,11 +4,15 @@ Dapper Doe is a static web page generator/editor that makes any html template dr
 
 This project is starting and only the most basic features are ready, so if you need something more, I'll be glad you contribute!
 
-## Intro / Demo
+## Demo
 
 *First of all, test Dapper Doe with the demo in order to better understand the rest of this readme.*
 
 **Demo : <a href="http://www.lafactoria.fr/dapperdoe/" target="_blank">www.lafactoria.fr/dapperdoe</a>**
+
+You can also test Dapper Doe on your machine. Just clone this repo and run `grunt serve`. This will start a local server at `http://localhost:9000`. Open the example index.html page at `http://localhost:9000/demo/index.html` and start playing with the editor.
+
+## Intro
 
 Dapper Doe is based on snippets. A snippet is a chunk of html code that represents an editable and addable block of content. Snippets are available on the right sidebar of the editor and can be dragged into the page. 
 
@@ -16,9 +20,9 @@ The contents of snippets can be edited by clicking on them. Currently, `<h1>`, `
 
 ## Getting Started
 
-Here is an example project based on Twitter Bootstrap: <a href="http://www.lafactoria.fr/dapperdoe/dapperdoe.zip" target="_blank">dapperdoe.zip</a>. Download it and check `snippets.html` and `script.js` files to better understand how to make DapperDoe work.
+Check `snippets.html` and `script.js` files in the `demo/bootstrap` folder to better understand how to make DapperDoe work.
 
-**Dapper Doe will only work on a server as it uses ajax to load contents, so use a local static file server to do you tests**
+**Dapper Doe will only work on a server as it uses ajax to load contents, so use the grunt static file server to do you tests or use it on your own server**
 
 ####Include Dapper Doe js and css files
 
@@ -49,7 +53,7 @@ Take a look at the file called `/bootstrap/snippets.html` in the example project
 
 You just need to add the attribute "data-preview" to make DapperDoe aware that this snippet must be added in the sidebar. The value of `data-preview` is the path to the snippet's image preview that will appear in the sidebar (typically a screenshot of the result, you can check the png files in `/bootstrap/snippets/` to see an example).
 
-In order to tell Dapper Doe that text tags can be edited, you mush add the `dd_text` class to them. For example `<h1 class="dd_text">Hello, world!</h1>` will trigger the text editor when text is selected.
+In order to tell Dapper Doe that text tags can be edited, you must add the `dd_text` class to them. For example `<h1 class="dd_text">Hello, world!</h1>` will trigger the text editor when text is selected.
 	
 ####Call DapperDoe
 

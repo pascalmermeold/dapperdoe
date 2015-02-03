@@ -166,7 +166,6 @@ body {
 }
 .dd_top_element .dd_snippet {
   position: relative;
-  border: dashed 1px #eee;
 }
 .dd_top_element .dd_snippet img {
   width: 100%;

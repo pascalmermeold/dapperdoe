@@ -1,5 +1,6 @@
 $(document).ready(function() {
-    $('#dd_container').dapperDoe({
+	window.app = new DapperDoe.App({
+		topElement: $('#dd_container'),
 		snippetsPath: 'bootstrap/snippets.html',
 		buttonClass: 'btn btn-default',
 		buttonOptions: {
@@ -9,18 +10,6 @@ $(document).ready(function() {
 				"btn-sm" : "Small"
 			}
 		},
-		// savePageCallback: function(html, callback) {
-		// 	$.ajax('/static_pages/1.json',{
-		// 		type: 'POST',
-		// 		contentType: 'text/plain',
-		// 		data: html
-		// 	}).success(function(data) {
-		// 		callback();
-		// 	}).error(function(data){
-		// 		callback();
-		// 		alert("The page wasn't saved, error processing the request")
-		// 	})
-		// },
 		// saveImageCallback: function(formdata, callback) {
 		// 	$.ajax("/static_images.json",{
 		// 		type: 'POST',
@@ -37,4 +26,4 @@ $(document).ready(function() {
 		// 	})
 		// }
 	})
-});
+})

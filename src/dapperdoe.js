@@ -170,12 +170,12 @@
           return _this.imageBackgroundFileSelector(e);
         };
       })(this));
-      this.$el.find(".image_input, .dd_snippet_padding").bind("click", (function(_this) {
+      this.$el.find(".dd_image_background .image_input, .dd_snippet_padding").bind("click", (function(_this) {
         return function(e) {
           return e.stopPropagation();
         };
       })(this));
-      this.$el.find(".image_input").bind("change", (function(_this) {
+      this.$el.find(".dd_image_background .image_input").bind("change", (function(_this) {
         return function(e) {
           return _this.uploadBackgroundImage(e);
         };
@@ -206,7 +206,7 @@
     Snippet.prototype.addTools = function() {
       var baseColor, _i, _len, _ref;
       this.$el.append("<div class='dd_tools dd_ui'> <div class='dd_tool snippet_mover'><i class='fa fa-arrows'></i></div> <div class='dd_tool snippet_settings'><i class='fa fa-adjust'></i></div> <div class='dd_tool snippet_destroyer'><i class='fa fa-trash'></i></div> </div>");
-      this.$el.append("<div class='dd_snippet_settings'><div class='dd_background_manager'></div></div>");
+      this.$el.append("<div class='dd_snippet_settings dd_ui'><div class='dd_background_manager'></div></div>");
       _ref = window.app.colorPalette;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
         baseColor = _ref[_i];
@@ -317,14 +317,9 @@
           return window.app.textToolbar.hide();
         };
       })(this));
-      this.$el.bind("click", (function(_this) {
+      return this.$el.bind("click", (function(_this) {
         return function() {
           return window.app.textToolbar.hide();
-        };
-      })(this));
-      return $("#dd_save_page_button").bind("click", (function(_this) {
-        return function() {
-          return _this.savePage();
         };
       })(this));
     };
@@ -341,8 +336,7 @@
     };
 
     AppView.prototype.addTools = function() {
-      $('body').append("<div class='dd_loader'><i class='fa fa-circle-o-notch fa-spin'></i></div>");
-      return $('body').append("<div id='dd_save_page_button'><i class='fa fa-save'></i> Save</div>");
+      return $('body').append("<div class='dd_loader'><i class='fa fa-circle-o-notch fa-spin'></i></div>");
     };
 
     AppView.prototype.parsePage = function() {
@@ -353,11 +347,11 @@
       });
     };
 
-    AppView.prototype.savePage = function() {
+    AppView.prototype.getHtml = function() {
       var html;
-      this.startLoader();
       html = this.$el.clone();
       $(html).find('.dd_ui').remove();
+      $(html).find('.ui-draggable, .ui-draggable-handle').removeClass('ui-draggable ui-draggable-handle');
       $(html).find('.rangySelectionBoundary').remove();
       $(html).find('*[contenteditable=true]').removeAttr('contenteditable');
       $(html).find('.dd_image_wrapper').each(function() {
@@ -368,11 +362,7 @@
         $(this).children().appendTo($(this).parent());
         return $(this).remove();
       });
-      return window.app.savePageCallback(html.html().replace(/(\r\n|\n|\r|\t)/gm, "").replace(/<script>/gi, '').replace(/<\/script>/gi, ''), (function(_this) {
-        return function() {
-          return _this.stopLoader();
-        };
-      })(this));
+      return html.html().replace(/(\r\n|\n|\r|\t)/gm, "").replace(/<script>/gi, '').replace(/<\/script>/gi, '');
     };
 
     AppView.prototype.startLoader = function() {
@@ -1063,48 +1053,28 @@
 }).call(this);
 
 (function() {
-  var $,
-    __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
+  var __bind = function(fn, me){ return function(){ return fn.apply(me, arguments); }; };
 
-  $ = jQuery;
-
-  $.fn.extend({
-    dapperDoe: function(options) {
+  DapperDoe.App = (function() {
+    function App(options) {
+      this.buildApp = __bind(this.buildApp, this);
       var settings;
       settings = {
         buttonClass: 'btn',
         colorPalette: ['eb6566', 'f4794d', 'fbd546', '599e7f', '3e8871', '618eb1', '0d6eb2', '595d8e', 'b172ab', '792360', 'ac8b66', '8b9291', 'ffffff'],
-        savePageCallback: function(html, callback) {
-          console.log(html);
-          return callback();
-        },
         saveImageCallback: function(formdata, callback) {
           console.log(formdata);
           return callback(false);
         }
       };
       settings = $.extend(settings, options);
-      return this.each(function() {
-        var topElement;
-        topElement = this;
-        return window.app = new DapperDoe.App({
-          settings: settings,
-          topElement: $(this)
-        });
-      });
-    }
-  });
-
-  DapperDoe.App = (function() {
-    function App(options) {
-      this.buildApp = __bind(this.buildApp, this);
-      this.snippetsPath = options.settings.snippetsPath;
-      this.buttonClass = options.settings.buttonClass;
-      this.buttonOptions = options.settings.buttonOptions;
-      this.colorPalette = options.settings.colorPalette;
-      this.savePageCallback = options.settings.savePageCallback;
-      this.saveImageCallback = options.settings.saveImageCallback;
-      this.topElement = options.topElement;
+      this.snippetsPath = settings.snippetsPath;
+      this.buttonClass = settings.buttonClass;
+      this.buttonOptions = settings.buttonOptions;
+      this.colorPalette = settings.colorPalette;
+      this.savePageCallback = settings.savePageCallback;
+      this.saveImageCallback = settings.saveImageCallback;
+      this.topElement = settings.topElement;
       this.template = new DapperDoe.Template({
         topElement: this.topElement,
         path: this.snippetsPath,
@@ -1130,6 +1100,10 @@
       return this.view = new DapperDoe.AppView({
         el: this.topElement
       });
+    };
+
+    App.prototype.getHtml = function() {
+      return this.view.getHtml();
     };
 
     return App;

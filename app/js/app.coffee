@@ -5,13 +5,9 @@
 # Initialize app
 # ----------
 
-$ = jQuery
-
-# jQuery Plugin definition
-$.fn.extend
-  dapperDoe: (options) ->
-
-    #Default settings
+# DapperDoe main app
+class DapperDoe.App
+  constructor: (options) ->
     settings =
       buttonClass: 'btn'
       colorPalette: [
@@ -30,34 +26,20 @@ $.fn.extend
         'ffffff'
       ]
 
-      #By defaut, callbacks just log
-      savePageCallback: (html, callback) ->
-        console.log(html)
-        callback()
+      #By defaut, image callback just log
       saveImageCallback: (formdata, callback) ->
         console.log(formdata)
         callback(false)
 
     settings = $.extend settings, options
 
-    return @each () ->
-      topElement = this
-
-      window.app = new DapperDoe.App
-        settings: settings
-        topElement: $(this)
-
-# DapperDoe app created by the jQuery plugin
-class DapperDoe.App
-  constructor: (options) ->
-    this.snippetsPath = options.settings.snippetsPath
-    this.buttonClass = options.settings.buttonClass
-    this.buttonOptions = options.settings.buttonOptions
-    this.colorPalette = options.settings.colorPalette
-    this.savePageCallback = options.settings.savePageCallback
-    this.saveImageCallback = options.settings.saveImageCallback
-
-    this.topElement = options.topElement
+    this.snippetsPath = settings.snippetsPath
+    this.buttonClass = settings.buttonClass
+    this.buttonOptions = settings.buttonOptions
+    this.colorPalette = settings.colorPalette
+    this.savePageCallback = settings.savePageCallback
+    this.saveImageCallback = settings.saveImageCallback
+    this.topElement = settings.topElement
 
     # We create a template based on the given snippetsPath
     this.template = new DapperDoe.Template
@@ -82,3 +64,6 @@ class DapperDoe.App
   initTopElement: ->
     this.view = new DapperDoe.AppView
       el: this.topElement
+
+  getHtml: ->
+    this.view.getHtml()

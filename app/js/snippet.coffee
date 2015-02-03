@@ -83,8 +83,8 @@ class DapperDoe.Snippet
     this.$el.find(".dd_tools .snippet_settings").bind("click", => this.toggleSettings())
     this.$el.find(".dd_snippet_settings").bind("click", => this.hideSettings())
     this.$el.find(".dd_image_background").bind("click", (e) => this.imageBackgroundFileSelector(e))
-    this.$el.find(".image_input, .dd_snippet_padding").bind("click", (e) => e.stopPropagation())
-    this.$el.find(".image_input").bind("change", (e) => this.uploadBackgroundImage(e))
+    this.$el.find(".dd_image_background .image_input, .dd_snippet_padding").bind("click", (e) => e.stopPropagation())
+    this.$el.find(".dd_image_background .image_input").bind("change", (e) => this.uploadBackgroundImage(e))
     this.$el.find(".dd_snippet_padding").bind("input", (e) => this.updatePadding(e))
 
   toggleSettings: ->
@@ -106,7 +106,7 @@ class DapperDoe.Snippet
       <div class='dd_tool snippet_settings'><i class='fa fa-adjust'></i></div>
       <div class='dd_tool snippet_destroyer'><i class='fa fa-trash'></i></div>
     </div>")
-    this.$el.append("<div class='dd_snippet_settings'><div class='dd_background_manager'></div></div>")
+    this.$el.append("<div class='dd_snippet_settings dd_ui'><div class='dd_background_manager'></div></div>")
     for baseColor in window.app.colorPalette
       this.$el.find('.dd_snippet_settings .dd_background_manager').append("<span class='color' style='background: ##{baseColor};' data-color='#{baseColor}'></span>")
     this.$el.find('.dd_snippet_settings .dd_background_manager').append("<span class='dd_image_background'><i class='fa fa-picture-o'></i></span><input type='file' class='image_input' style='display: none;'/>")
@@ -181,7 +181,6 @@ class DapperDoe.AppView
   events: ->
     $('body').bind('click', => window.app.textToolbar.hide())
     this.$el.bind("click", => window.app.textToolbar.hide())
-    $("#dd_save_page_button").bind("click", => this.savePage())
 
   # Adds a snippet to the page, giving it a random id
   addSnippet: (event, ui) =>
@@ -193,17 +192,16 @@ class DapperDoe.AppView
 
   addTools: ->
     $('body').append("<div class='dd_loader'><i class='fa fa-circle-o-notch fa-spin'></i></div>")
-    $('body').append("<div id='dd_save_page_button'><i class='fa fa-save'></i> Save</div>")
 
   parsePage: ->
     this.$el.find('.dd_snippet').each (index, snippet) ->
       new DapperDoe.Snippet({el: $(snippet)})
 
   # Prepares the html for saving and calls the callback
-  savePage: ->
-    this.startLoader()
+  getHtml: ->
     html = this.$el.clone()
     $(html).find('.dd_ui').remove()
+    $(html).find('.ui-draggable, .ui-draggable-handle').removeClass('ui-draggable ui-draggable-handle')
     $(html).find('.rangySelectionBoundary').remove()
     $(html).find('*[contenteditable=true]').removeAttr('contenteditable')
     $(html).find('.dd_image_wrapper').each ->
@@ -212,9 +210,7 @@ class DapperDoe.AppView
     $(html).find('.dd_text .dd_text_content').each ->
       $(this).children().appendTo($(this).parent())
       $(this).remove()
-    window.app.savePageCallback(html.html().replace(/(\r\n|\n|\r|\t)/gm,"").replace(/<script>/gi,'').replace(/<\/script>/gi,''), =>
-      this.stopLoader()
-    )
+    return html.html().replace(/(\r\n|\n|\r|\t)/gm,"").replace(/<script>/gi,'').replace(/<\/script>/gi,'')
 
   startLoader: ->
     $('.dd_loader').show()

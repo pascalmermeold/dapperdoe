@@ -55,29 +55,26 @@ You just need to add the attribute "data-preview" to make DapperDoe aware that t
 
 In order to tell Dapper Doe that text tags can be edited, you must add the `dd_text` class to them. For example `<h1 class="dd_text">Hello, world!</h1>` will trigger the text editor when text is selected.
 	
-####Call DapperDoe
+####Run DapperDoe
 
-Call `dapperDoe()` on the element that serves as container for the snippets. Three options are mandatory : the path to the snippets, the callback that will save rendered html and the callback that will save uploaded images :
+Create a `new DapperDoe.App({...})` object to launch the editor and assign it to `window.app`. Three options are mandatory : the element that serves as container for the snippets, the path to the snippets and a callback that will save uploaded images on a server of your choice :
 
- 	$('#container').dapperDoe({
+ 	window.app = new DapperDoe.App({
+ 		topElement: $('#dd_container'),
 		snippetsPath: './bootstrap/snippets.html',
-		savePageCallback: function(html, callback) {
-			saveHtmlSomewhere(html);
-			callback();
-		}, 
 		saveImageCallback: function(formdata, callback) {
 			saveImageSomewhere(formdata);
 			callback(savedImageUrl);
 		}
 	});
-	
-You need to call `callback()` once the page has been saved in `savePageCallback()` to inform DapperDoe the request is finished.
 
 You need to call `callback(savedImageUrl)` once an image has been saved in `saveImageCallback()` to let know DapperDoe the url of the image.
 	
 ####That's it!
 
 Just load your page and you'll see DapperDoe magic happen!
+
+In order to get the html that has been generated with the editor, just run `window.app.getHtml()`
 
 ## Options
 
@@ -117,10 +114,6 @@ The default class used for buttons is `.btn`. You can customize this class with 
 		buttonClass: 'btn',
 		buttonOptions: {
 			option1: {
-				"btn-default" : "Default",
-				"btn-primary" : "Primary"
-			},
-			option2: {
 				"btn-lg" : "Large",
 				"btn-md" : "Medium",
 				"btn-sm" : "Small"
@@ -145,7 +138,10 @@ If you need a feature, I'll be happy to point you in the right direction so you 
 
 * Font Awesome as a dependency
 * New text editor (more user-friendly and Firefox compatible)
-* 
+* Color choice for buttons
+* Snippet's background color
+* Snippet's background image
+* Snippet's padding
 
 **Bugs**
 

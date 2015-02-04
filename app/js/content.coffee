@@ -30,10 +30,8 @@ class DapperDoe.Content.Text extends DapperDoe.Content
 		this.events()
 
 		# Wrap content with p it plain text to prevent Firefox bug
-		if ((this.$el.is('p, div, blockquote')) and (this.$el.children().length == 0))
-			this.$el.wrapInner('<p></p>')
-		else if ((this.$el.is('h1, h2, h3, h4, h5, h6')) and (this.$el.children().length == 0))
-			this.$el.wrapInner('<div></div>')
+		if (this.$el.find('.dd_text_content').length == 0)
+			this.$el.wrapInner("<div class='dd_text_content'></div>")
 
 	events: ->
 		this.$el.bind('paste', (e) => this.handlePaste(e))

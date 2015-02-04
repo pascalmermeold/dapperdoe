@@ -212,8 +212,7 @@ class DapperDoe.AppView
       $(this).find('img').appendTo($(this).parent())
       $(this).remove()
     $(html).find('.dd_text .dd_text_content').each ->
-      $(this).children().appendTo($(this).parent())
-      $(this).remove()
+      $(this).parent().html($(this).html())
     return html.html().replace(/(\r\n|\n|\r|\t)/gm,"").replace(/<script>/gi,'').replace(/<\/script>/gi,'')
 
   startLoader: ->

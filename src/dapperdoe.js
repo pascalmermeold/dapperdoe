@@ -363,8 +363,7 @@
         return $(this).remove();
       });
       $(html).find('.dd_text .dd_text_content').each(function() {
-        $(this).children().appendTo($(this).parent());
-        return $(this).remove();
+        return $(this).parent().html($(this).html());
       });
       return html.html().replace(/(\r\n|\n|\r|\t)/gm, "").replace(/<script>/gi, '').replace(/<\/script>/gi, '');
     };
@@ -426,10 +425,8 @@
       Text.__super__.constructor.call(this, options);
       this.$el.attr('contenteditable', 'true');
       this.events();
-      if ((this.$el.is('p, div, blockquote')) && (this.$el.children().length === 0)) {
-        this.$el.wrapInner('<p></p>');
-      } else if ((this.$el.is('h1, h2, h3, h4, h5, h6')) && (this.$el.children().length === 0)) {
-        this.$el.wrapInner('<div></div>');
+      if (this.$el.find('.dd_text_content').length === 0) {
+        this.$el.wrapInner("<div class='dd_text_content'></div>");
       }
     }
 

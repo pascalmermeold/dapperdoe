@@ -775,7 +775,9 @@
       e.stopPropagation();
       color = $(e.target).data('color');
       this.hide(e);
-      return this.callback(color);
+      if (this.callback) {
+        return this.callback(color);
+      }
     };
 
     Color.prototype.hide = function() {
@@ -868,14 +870,14 @@
     };
 
     Url.prototype.html = function() {
-      var $html, key, klass, name, option, _ref;
+      var $html, key, key2, option, subOption, _ref;
       $html = $("<div class='dd_sub_toolbar_content dd_toolbar_url'> <input type='text' placeholder='Url' class='dd_url' /> <span class='dd_link_color'></span> <div class='dd_submit'><i class='fa fa-check'></i></div> <div class='clearfix'></div> <div class='dd_url_options'> <label>_blank <input type='checkbox' class='dd_blank'/></label> <label>Button <input type='checkbox' class='dd_button'/></label> </div> </div>");
       _ref = window.app.buttonOptions;
       for (key in _ref) {
         option = _ref[key];
-        for (klass in option) {
-          name = option[klass];
-          $html.find(".dd_url_options").append("<label> " + name + " <input type='radio' name='" + key + "' value='" + klass + "' /> </label>");
+        for (key2 in option) {
+          subOption = option[key2];
+          $html.find(".dd_url_options").append("<label> " + subOption.name + " <input type='radio' name='" + key + "' value='" + subOption["class"] + "' /> </label>");
         }
         $html.find("input[name=" + key + "]:first").attr('checked', true);
       }

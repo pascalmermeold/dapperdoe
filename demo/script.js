@@ -5,9 +5,18 @@ $(document).ready(function() {
 		buttonClass: 'btn btn-default',
 		buttonOptions: {
 			option1: {
-				"btn-lg" : "Large",
-				"btn-md" : "Medium",
-				"btn-sm" : "Small"
+				"large": {
+					"class": "btn-lg",
+					"name": "Large"
+				},
+				"medium": {
+					"class": "btn-md",
+					"name": "Medium"
+				},
+				"small": {
+					"class": "btn-sm",
+					"name": "Small"
+				}
 			}
 		},
 		// saveImageCallback: function(formdata, callback) {

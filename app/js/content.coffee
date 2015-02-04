@@ -256,7 +256,8 @@ class DapperDoe.TextSubToolbar.Color extends DapperDoe.TextSubToolbar
 		e.stopPropagation()
 		color = $(e.target).data('color')
 		this.hide(e)
-		this.callback(color)
+		if this.callback
+			this.callback(color)
 
 	hide: ->
 		this.$el.find('.dd_toolbar_color').hide()
@@ -344,9 +345,9 @@ class DapperDoe.TextSubToolbar.Url extends DapperDoe.TextSubToolbar
 
 		for key, option of window.app.buttonOptions
 
-			for klass, name of option
+			for key2, subOption of option
 				$html.find(".dd_url_options").append("<label>
-					#{name} <input type='radio' name='#{key}' value='#{klass}' />
+					#{subOption.name} <input type='radio' name='#{key}' value='#{subOption.class}' />
 				</label>")
 
 			$html.find("input[name=#{key}]:first").attr('checked', true);

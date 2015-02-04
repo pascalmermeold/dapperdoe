@@ -41,6 +41,7 @@ class DapperDoe.App
     this.savePageCallback = settings.savePageCallback
     this.saveImageCallback = settings.saveImageCallback
     this.topElement = settings.topElement
+    this.snippetsContainer = settings.snippetsContainer
 
     # We create a template based on the given snippetsPath
     this.template = new DapperDoe.Template

@@ -1,6 +1,7 @@
 $(document).ready(function() {
 	window.app = new DapperDoe.App({
 		topElement: $('#dd_container'),
+		snippetsContainer: $('#dd_sidebar'),
 		snippetsPath: 'bootstrap/snippets.html',
 		buttonClass: 'btn btn-default',
 		buttonOptions: {

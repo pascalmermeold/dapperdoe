@@ -1,4 +1,4 @@
-/*! Dapper Doe - v0.2.0 - 2015-02-03
+/*! Dapper Doe - v0.2.0 - 2015-02-04
 * https://github.com/pascalmerme/dapperdoe
 * Copyright (c) 2015 Pascal Merme; Licensed MIT */
 (function() {
@@ -102,8 +102,7 @@
 
     Sidebar.prototype.buildSidebar = function() {
       var i, snippet, snippet_view, _i, _len, _ref;
-      this.$el = $("<div id='dd_sidebar'></div>");
-      this.$el.append("<span class='dd_sidebar_opener'><i class='fa fa-pencil'></i></span>");
+      this.$el = window.app.snippetsContainer;
       this.$el.append("<div class='dd_snippets_previews'></div>");
       _ref = this.collection;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {
@@ -1075,6 +1074,7 @@
       this.savePageCallback = settings.savePageCallback;
       this.saveImageCallback = settings.saveImageCallback;
       this.topElement = settings.topElement;
+      this.snippetsContainer = settings.snippetsContainer;
       this.template = new DapperDoe.Template({
         topElement: this.topElement,
         path: this.snippetsPath,

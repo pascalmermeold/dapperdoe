@@ -51,8 +51,9 @@ class DapperDoe.Sidebar
 
   # Build snippets previews from the template object
   buildSidebar: ->
-    this.$el = $("<div id='dd_sidebar'></div>")
-    this.$el.append("<span class='dd_sidebar_opener'><i class='fa fa-pencil'></i></span>")
+    this.$el = window.app.snippetsContainer
+    # this.$el = $("<div id='dd_sidebar'></div>")
+    # this.$el.append("<span class='dd_sidebar_opener'><i class='fa fa-pencil'></i></span>")
     this.$el.append("<div class='dd_snippets_previews'></div>")
     for snippet, i in @collection
       snippet_view = new DapperDoe.SnippetPreview

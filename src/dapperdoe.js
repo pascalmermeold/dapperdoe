@@ -102,7 +102,12 @@
 
     Sidebar.prototype.buildSidebar = function() {
       var i, snippet, snippet_view, _i, _len, _ref;
-      this.$el = window.app.snippetsContainer;
+      if (window.app.snippetsContainer) {
+        this.$el = window.app.snippetsContainer;
+      } else {
+        this.$el = $("<div id='dd_sidebar'></div>");
+        this.$el.append("<span class='dd_sidebar_opener'><i class='fa fa-pencil'></i></span>");
+      }
       this.$el.append("<div class='dd_snippets_previews'></div>");
       _ref = this.collection;
       for (i = _i = 0, _len = _ref.length; _i < _len; i = ++_i) {

@@ -80,6 +80,16 @@ In order to get the html that has been generated with the editor, just run `wind
 
 You can customize DapperDoe UI with some options :
 
+####Snippets Container
+
+By default, a sidebar containing the draggable snippets will appear on the right of the screen. But you can place the snippets in a custom div if you want. To do so, use the `snippetsContainer` option:
+
+	window.app = new DapperDoe.App({
+		...,
+		snippetsContainer: $('#my_own_sidebar'),
+        ...
+	});
+
 ####Color Palette
 
 A default color palette is provided by default. You can customize it by giving DapperDoe the base colors you want to use :

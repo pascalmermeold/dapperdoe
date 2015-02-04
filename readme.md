@@ -8,7 +8,7 @@ This project is starting and only the most basic features are ready, so if you n
 
 *First of all, test Dapper Doe with the demo in order to better understand the rest of this readme.*
 
-**Demo : <a href="http://www.lafactoria.fr/dapperdoe/" target="_blank">www.lafactoria.fr/dapperdoe</a>**
+**Demo : <a href="http://pascalmerme.github.io/dapperdoe/" target="_blank">http://pascalmerme.github.io/dapperdoe/</a>**
 
 You can also test Dapper Doe on your machine. Just clone this repo and run `grunt serve`. This will start a local server at `http://localhost:9000`. Open the example index.html page at `http://localhost:9000/demo/index.html` and start playing with the editor.
 

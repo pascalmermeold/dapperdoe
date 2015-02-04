@@ -124,9 +124,18 @@ The default class used for buttons is `.btn`. You can customize this class with 
 		buttonClass: 'btn',
 		buttonOptions: {
 			option1: {
-				"btn-lg" : "Large",
-				"btn-md" : "Medium",
-				"btn-sm" : "Small"
+				"large": {
+					"class": "btn-lg",
+					"name": "Large"
+				},
+				"medium": {
+					"class": "btn-md",
+					"name": "Medium"
+				},
+				"small": {
+					"class": "btn-sm",
+					"name": "Small"
+				}
 			}
 		},
 		...

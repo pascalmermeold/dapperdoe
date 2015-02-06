@@ -1,4 +1,4 @@
-/*! Dapper Doe - v0.2.0 - 2015-02-04
+/*! Dapper Doe - v0.2.0 - 2015-02-06
 * https://github.com/pascalmerme/dapperdoe
 * Copyright (c) 2015 Pascal Merme; Licensed MIT */
 (function() {
@@ -365,7 +365,7 @@
       $(html).find('.dd_text .dd_text_content').each(function() {
         return $(this).parent().html($(this).html());
       });
-      return html.html().replace(/(\r\n|\n|\r|\t)/gm, "").replace(/<script>/gi, '').replace(/<\/script>/gi, '');
+      return html.html().replace(/<script>/gi, '').replace(/<\/script>/gi, '');
     };
 
     AppView.prototype.startLoader = function() {

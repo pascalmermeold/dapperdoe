@@ -213,7 +213,7 @@ class DapperDoe.AppView
       $(this).remove()
     $(html).find('.dd_text .dd_text_content').each ->
       $(this).parent().html($(this).html())
-    return html.html().replace(/(\r\n|\n|\r|\t)/gm,"").replace(/<script>/gi,'').replace(/<\/script>/gi,'')
+    return html.html().replace(/<script>/gi,'').replace(/<\/script>/gi,'')
 
   startLoader: ->
     $('.dd_loader').show()

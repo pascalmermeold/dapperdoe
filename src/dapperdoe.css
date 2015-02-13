@@ -1,4 +1,4 @@
-/*! Dapper Doe - v0.2.0 - 2015-02-06
+/*! Dapper Doe - v0.2.0 - 2015-02-13
 * https://github.com/pascalmerme/dapperdoe
 * Copyright (c) 2015 Pascal Merme; Licensed MIT */
 body {
@@ -238,14 +238,19 @@ body {
   display: inline-block;
   width: 150px;
 }
-.dd_top_element .dd_snippet .dd_image_wrapper {
+.dd_top_element .dd_snippet .dd_image_wrapper,
+.dd_top_element .dd_snippet .dd_video {
   position: relative;
 }
-.dd_top_element .dd_snippet .dd_image_wrapper .dd_tools {
+.dd_top_element .dd_snippet .dd_image_wrapper .dd_tools,
+.dd_top_element .dd_snippet .dd_video .dd_tools {
   position: absolute;
   text-align: center;
 }
-.dd_top_element .dd_snippet .dd_image_wrapper .dd_tools .image_upload {
+.dd_top_element .dd_snippet .dd_image_wrapper .dd_tools .image_upload,
+.dd_top_element .dd_snippet .dd_video .dd_tools .image_upload,
+.dd_top_element .dd_snippet .dd_image_wrapper .dd_tools .video_action,
+.dd_top_element .dd_snippet .dd_video .dd_tools .video_action {
   background: #fff;
   width: 50px;
   height: 50px;
@@ -256,7 +261,8 @@ body {
   margin: 5px;
   cursor: pointer;
 }
-.dd_top_element .dd_snippet .dd_image_wrapper .dd_tools .image_link {
+.dd_top_element .dd_snippet .dd_image_wrapper .dd_tools .image_link,
+.dd_top_element .dd_snippet .dd_video .dd_tools .image_link {
   background: #fff;
   width: 40px;
   height: 40px;
@@ -266,4 +272,18 @@ body {
   padding: 11px;
   margin: 5px;
   cursor: pointer;
+}
+.dd_top_element .dd_snippet .dd_video .dd_tools {
+  width: 500px;
+}
+.dd_top_element .dd_snippet .dd_video .dd_tools textarea.video_code_textarea {
+  width: 500px;
+  height: 100px;
+  border: none;
+  border-radius: 2px;
+  outline: none;
+  padding: 6px 7px;
+  font-family: Monaco, Consolas, "Courier New", Courier;
+  color: #888;
+  resize: none;
 }

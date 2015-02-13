@@ -63,6 +63,12 @@ class DapperDoe.Content.Image extends DapperDoe.Content
 		super(options)
 		this.tools = new DapperDoe.Tools.Image({image: this.$el})
 
+# Video content called on <div container iframe width class "dd_video">
+class DapperDoe.Content.Video extends DapperDoe.Content
+	constructor: (options) ->
+		super(options)
+		this.tools = new DapperDoe.Tools.Video({el: this.$el})
+
 # UI for editing images
 class DapperDoe.Tools.Image extends DapperDoe.Tools
 	constructor: (options) ->
@@ -121,6 +127,54 @@ class DapperDoe.Tools.Image extends DapperDoe.Tools
 			<!--<i class='image_link fa fa-link'></i><br/>-->
 			<i class='image_upload fa fa-image'></i>
 				<input type='file' class='image_input' style='display: none;'/>
+		</span>"
+
+# UI for editing images
+class DapperDoe.Tools.Video extends DapperDoe.Tools
+	constructor: (options) ->
+		this.$el = options.el
+		this.$el.append(this.html)
+		this.$tools = this.$el.find('.dd_tools')
+		this.positionTools()
+		this.$tools.hide()
+		this.events()
+
+	events: ->
+		this.$el.find(".video_action").bind("click", => this.doAction())
+		this.$el.bind("mouseover", => this.show())
+		this.$el.bind("mouseout", => this.hide())
+		#this.$el.find(".image_input").bind("change", (e) => this.uploadImage(e))
+
+	show: (e) ->
+		this.positionTools()
+		this.$tools.show()
+
+	hide: (e) ->
+		this.$tools.hide()
+
+	# Position buttons at the center of the image
+	positionTools: ->
+		this.$tools.css('left',(this.$el.width()/2)-(this.$el.find('.dd_tools').width()/2))
+		this.$tools.css('top',(this.$el.height()/2)-(this.$el.find('.dd_tools').height()/2))
+
+	doAction: ->
+		$icon = this.$el.find(".video_action")
+		console.log($icon.hasClass('fa-code'))
+		if $icon.hasClass('fa-code')
+			this.$el.find(".video_code_textarea").slideDown()
+			$icon.switchClass('fa-code', 'fa-check')
+		else
+			this.$el.find(".video_code_textarea").slideUp()
+			$icon.switchClass('fa-check', 'fa-code')
+			console.log this.$el.find('iframe')
+			this.$el.find('iframe').replaceWith(this.$el.find(".video_code_textarea").val())
+			this.hide()
+
+	# UI's DOM
+	html: ->
+		"<span class='dd_tools dd_ui'>
+			<textarea class='video_code_textarea' style='display:none;'><iframe></iframe></textarea>
+			<i class='video_action fa fa-code'></i><br/>
 		</span>"
 
 # UI for editing texts

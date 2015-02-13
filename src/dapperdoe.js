@@ -1,4 +1,4 @@
-/*! Dapper Doe - v0.2.0 - 2015-02-06
+/*! Dapper Doe - v0.2.0 - 2015-02-13
 * https://github.com/pascalmerme/dapperdoe
 * Copyright (c) 2015 Pascal Merme; Licensed MIT */
 (function() {
@@ -281,8 +281,13 @@
           el: $(this)
         });
       });
-      return this.$el.find('img').each(function() {
+      this.$el.find('img').each(function() {
         return new DapperDoe.Content.Image({
+          el: $(this)
+        });
+      });
+      return this.$el.find('.dd_video').each(function() {
+        return new DapperDoe.Content.Video({
           el: $(this)
         });
       });
@@ -494,6 +499,20 @@
 
   })(DapperDoe.Content);
 
+  DapperDoe.Content.Video = (function(_super) {
+    __extends(Video, _super);
+
+    function Video(options) {
+      Video.__super__.constructor.call(this, options);
+      this.tools = new DapperDoe.Tools.Video({
+        el: this.$el
+      });
+    }
+
+    return Video;
+
+  })(DapperDoe.Content);
+
   DapperDoe.Tools.Image = (function(_super) {
     __extends(Image, _super);
 
@@ -581,6 +600,74 @@
     };
 
     return Image;
+
+  })(DapperDoe.Tools);
+
+  DapperDoe.Tools.Video = (function(_super) {
+    __extends(Video, _super);
+
+    function Video(options) {
+      this.$el = options.el;
+      this.$el.append(this.html);
+      this.$tools = this.$el.find('.dd_tools');
+      this.positionTools();
+      this.$tools.hide();
+      this.events();
+    }
+
+    Video.prototype.events = function() {
+      this.$el.find(".video_action").bind("click", (function(_this) {
+        return function() {
+          return _this.doAction();
+        };
+      })(this));
+      this.$el.bind("mouseover", (function(_this) {
+        return function() {
+          return _this.show();
+        };
+      })(this));
+      return this.$el.bind("mouseout", (function(_this) {
+        return function() {
+          return _this.hide();
+        };
+      })(this));
+    };
+
+    Video.prototype.show = function(e) {
+      this.positionTools();
+      return this.$tools.show();
+    };
+
+    Video.prototype.hide = function(e) {
+      return this.$tools.hide();
+    };
+
+    Video.prototype.positionTools = function() {
+      this.$tools.css('left', (this.$el.width() / 2) - (this.$el.find('.dd_tools').width() / 2));
+      return this.$tools.css('top', (this.$el.height() / 2) - (this.$el.find('.dd_tools').height() / 2));
+    };
+
+    Video.prototype.doAction = function() {
+      var $icon;
+      $icon = this.$el.find(".video_action");
+      console.log($icon.hasClass('fa-code'));
+      if ($icon.hasClass('fa-code')) {
+        this.$el.find(".video_code_textarea").slideDown();
+        return $icon.switchClass('fa-code', 'fa-check');
+      } else {
+        this.$el.find(".video_code_textarea").slideUp();
+        $icon.switchClass('fa-check', 'fa-code');
+        console.log(this.$el.find('iframe'));
+        this.$el.find('iframe').replaceWith(this.$el.find(".video_code_textarea").val());
+        return this.hide();
+      }
+    };
+
+    Video.prototype.html = function() {
+      return "<span class='dd_tools dd_ui'> <textarea class='video_code_textarea' style='display:none;'><iframe></iframe></textarea> <i class='video_action fa fa-code'></i><br/> </span>";
+    };
+
+    return Video;
 
   })(DapperDoe.Tools);
 

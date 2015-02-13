@@ -160,6 +160,7 @@ class DapperDoe.Snippet
   parseSnippet: ->
     this.$el.find('.dd_text').each ->  new DapperDoe.Content.Text({el: $(this)})
     this.$el.find('img').each -> new DapperDoe.Content.Image({el: $(this)})
+    this.$el.find('.dd_video').each -> new DapperDoe.Content.Video({el: $(this)})
 
   destroy: ->
     if confirm("Are you sure you want to destroy this snippet?")

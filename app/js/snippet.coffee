@@ -108,7 +108,7 @@ class DapperDoe.Snippet
     this.$el.append("<div class='dd_tools dd_ui'>
       <div class='dd_tool snippet_mover'><i class='fa fa-arrows'></i></div>
       <div class='dd_tool snippet_settings'><i class='fa fa-adjust'></i></div>
-      <div class='dd_tool snippet_destroyer'><i class='fa fa-trash'></i></div>
+      <div class='dd_tool snippet_destroyer'><i class='fa fa-times'></i></div>
     </div>")
     this.$el.append("<div class='dd_snippet_settings dd_ui'><div class='dd_background_manager'></div></div>")
     for baseColor in window.app.colorPalette

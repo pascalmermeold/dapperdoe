@@ -1,4 +1,4 @@
-/*! Dapper Doe - v0.2.0 - 2015-02-13
+/*! Dapper Doe - v0.2.0 - 2015-02-20
 * https://github.com/pascalmerme/dapperdoe
 * Copyright (c) 2015 Pascal Merme; Licensed MIT */
 (function() {
@@ -209,7 +209,7 @@
 
     Snippet.prototype.addTools = function() {
       var baseColor, _i, _len, _ref;
-      this.$el.append("<div class='dd_tools dd_ui'> <div class='dd_tool snippet_mover'><i class='fa fa-arrows'></i></div> <div class='dd_tool snippet_settings'><i class='fa fa-adjust'></i></div> <div class='dd_tool snippet_destroyer'><i class='fa fa-trash'></i></div> </div>");
+      this.$el.append("<div class='dd_tools dd_ui'> <div class='dd_tool snippet_mover'><i class='fa fa-arrows'></i></div> <div class='dd_tool snippet_settings'><i class='fa fa-adjust'></i></div> <div class='dd_tool snippet_destroyer'><i class='fa fa-times'></i></div> </div>");
       this.$el.append("<div class='dd_snippet_settings dd_ui'><div class='dd_background_manager'></div></div>");
       _ref = window.app.colorPalette;
       for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -634,7 +634,6 @@
     };
 
     Video.prototype.show = function(e) {
-      this.positionTools();
       return this.$tools.show();
     };
 
@@ -648,17 +647,18 @@
     };
 
     Video.prototype.doAction = function() {
-      var $icon;
+      var $icon, new_code;
       $icon = this.$el.find(".video_action");
-      console.log($icon.hasClass('fa-code'));
       if ($icon.hasClass('fa-code')) {
-        this.$el.find(".video_code_textarea").slideDown();
+        this.$el.find(".video_code_textarea").show();
         return $icon.switchClass('fa-code', 'fa-check');
       } else {
-        this.$el.find(".video_code_textarea").slideUp();
+        this.$el.find(".video_code_textarea").hide();
         $icon.switchClass('fa-check', 'fa-code');
-        console.log(this.$el.find('iframe'));
-        this.$el.find('iframe').replaceWith(this.$el.find(".video_code_textarea").val());
+        new_code = this.$el.find(".video_code_textarea").val();
+        if ((new_code !== "") && (new_code !== "<iframe></iframe>")) {
+          this.$el.find('iframe').replaceWith(this.$el.find(".video_code_textarea").val());
+        }
         return this.hide();
       }
     };

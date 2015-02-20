@@ -146,7 +146,7 @@ class DapperDoe.Tools.Video extends DapperDoe.Tools
 		#this.$el.find(".image_input").bind("change", (e) => this.uploadImage(e))
 
 	show: (e) ->
-		this.positionTools()
+		#this.positionTools()
 		this.$tools.show()
 
 	hide: (e) ->
@@ -159,15 +159,16 @@ class DapperDoe.Tools.Video extends DapperDoe.Tools
 
 	doAction: ->
 		$icon = this.$el.find(".video_action")
-		console.log($icon.hasClass('fa-code'))
+
 		if $icon.hasClass('fa-code')
-			this.$el.find(".video_code_textarea").slideDown()
+			this.$el.find(".video_code_textarea").show()
 			$icon.switchClass('fa-code', 'fa-check')
 		else
-			this.$el.find(".video_code_textarea").slideUp()
+			this.$el.find(".video_code_textarea").hide()
 			$icon.switchClass('fa-check', 'fa-code')
-			console.log this.$el.find('iframe')
-			this.$el.find('iframe').replaceWith(this.$el.find(".video_code_textarea").val())
+			new_code = this.$el.find(".video_code_textarea").val()
+			if (new_code != "") and (new_code != "<iframe></iframe>")
+				this.$el.find('iframe').replaceWith(this.$el.find(".video_code_textarea").val())
 			this.hide()
 
 	# UI's DOM

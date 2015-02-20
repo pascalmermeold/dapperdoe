@@ -59,7 +59,7 @@
     };
 
     SnippetPreview.prototype.buildSnippet = function() {
-      this.$el = $("<div class='dd_snippet'></div>");
+      this.$el = $("<div data-dd='snippet'></div>");
       this.$el.attr('id', "dd_snippet" + this.index);
       return this.$el.append($("<img src='" + this.snippet.previewUrl + "' />"));
     };
@@ -276,7 +276,7 @@
     };
 
     Snippet.prototype.parseSnippet = function() {
-      this.$el.find('.dd_text').each(function() {
+      this.$el.find('[data-dd="text"]').each(function() {
         return new DapperDoe.Content.Text({
           el: $(this)
         });
@@ -286,7 +286,7 @@
           el: $(this)
         });
       });
-      return this.$el.find('.dd_video').each(function() {
+      return this.$el.find('[data-dd="video"]').each(function() {
         return new DapperDoe.Content.Video({
           el: $(this)
         });
@@ -310,7 +310,7 @@
       this.$el.addClass('dd_top_element');
       this.addTools();
       this.$el.sortable({
-        items: ".dd_snippet",
+        items: "[data-dd='snippet']",
         forcePlaceholderSize: true,
         axis: 'y',
         receive: this.addSnippet,
@@ -349,7 +349,7 @@
     };
 
     AppView.prototype.parsePage = function() {
-      return this.$el.find('.dd_snippet').each(function(index, snippet) {
+      return this.$el.find('*[data-dd="snippet"]').each(function(index, snippet) {
         return new DapperDoe.Snippet({
           el: $(snippet)
         });
@@ -367,7 +367,7 @@
         $(this).find('img').appendTo($(this).parent());
         return $(this).remove();
       });
-      $(html).find('.dd_text .dd_text_content').each(function() {
+      $(html).find('[data-dd="text"] .dd_text_content').each(function() {
         return $(this).parent().html($(this).html());
       });
       return html.html().replace(/<script>/gi, '').replace(/<\/script>/gi, '');

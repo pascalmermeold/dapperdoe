@@ -16,7 +16,7 @@ You can also test Dapper Doe on your machine. Just clone this repo and run `grun
 
 Dapper Doe is based on snippets. A snippet is a chunk of html code that represents an editable and addable block of content. Snippets are available on the right sidebar of the editor and can be dragged into the page. 
 
-The contents of snippets can be edited by clicking on them. Currently, `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, `<h6>`, `<p>`, `<img>` are editable but lists, slideshows, videos will be available soon.
+The contents of snippets can be edited by clicking on them. Currently, `<h1>`, `<h2>`, `<h3>`, `<h4>`, `<h5>`, `<h6>`, `<p>`, `<img>` and `<iframe>` videos are editable but icons will be available soon.
 
 ## Getting Started
 
@@ -44,16 +44,34 @@ Take a look at the file called `/bootstrap/snippets.html` in the example project
 	<div data-preview="snippets/jumbotron.png">
 		<div class="jumbotron">
       		<div class="container">
-        		<h1 class="dd_text">Hello, world!</h1>
-        		<p class="dd_text">This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-        		<p class="dd_text"><a class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a></p>
+        		<h1 data-dd="text">Hello, world!</h1>
+        		<p data-dd="text">This is a template for a simple marketing or informational website. It includes a large callout called a jumbotron and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+        		<p data-dd="text"><a class="btn btn-primary btn-lg" role="button">Learn more &raquo;</a></p>
       		</div>
     	</div>
 	</div>
+	
+#####Snippets
 
 You just need to add the attribute "data-preview" to make DapperDoe aware that this snippet must be added in the sidebar. The value of `data-preview` is the path to the snippet's image preview that will appear in the sidebar (typically a screenshot of the result, you can check the png files in `/bootstrap/snippets/` to see an example).
 
-In order to tell Dapper Doe that text tags can be edited, you must add the `dd_text` class to them. For example `<h1 class="dd_text">Hello, world!</h1>` will trigger the text editor when text is selected.
+#####Text Editor
+
+In order to tell Dapper Doe that text tags can be edited, you must add the `data-dd="text"` attribute to them. For example `<h1 data-dd="text">Hello, world!</h1>` will trigger the text editor when text is selected. Don't include an editable tag inside another editable tag!
+
+#####Images
+
+`img` tags are automatically made editable. You don't need to do anything for them.
+
+#####Videos
+
+You can add videos in your template by adding the following markup :
+
+	<div data-dd="video">
+      <iframe src="..."></iframe>
+    </div>
+    
+As you can see, you just need to add a `data-dd="video"` attribute to a div wrapping the video iframe. It has been tested with Youtube, Vimeo and Dailymotion embed iframes.
 	
 ####Run DapperDoe
 

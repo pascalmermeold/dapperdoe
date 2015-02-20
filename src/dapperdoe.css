@@ -20,11 +20,11 @@ body {
   width: 100%;
   height: 100%;
 }
-#dd_sidebar .dd_snippets_previews .dd_snippet {
+#dd_sidebar .dd_snippets_previews [data-dd='snippet'] {
   margin-bottom: 10px;
   cursor: move;
 }
-#dd_sidebar .dd_snippets_previews .dd_snippet img {
+#dd_sidebar .dd_snippets_previews [data-dd='snippet'] img {
   max-width: 100%;
 }
 #dd_sidebar .dd_sidebar_opener {
@@ -161,24 +161,24 @@ body {
 .dd_top_element [contenteditable]:focus {
   outline: 0px solid transparent;
 }
-.dd_top_element .dd_snippet:hover {
+.dd_top_element [data-dd='snippet']:hover {
   box-shadow: 0 0 100px 100px rgba(100, 100, 100, 0.1) inset;
 }
-.dd_top_element .dd_snippet {
+.dd_top_element [data-dd='snippet'] {
   position: relative;
 }
-.dd_top_element .dd_snippet img {
+.dd_top_element [data-dd='snippet'] img {
   width: 100%;
 }
-.dd_top_element .dd_snippet .dd_content:hover {
+.dd_top_element [data-dd='snippet'] .dd_content:hover {
   box-shadow: 0 0 1px 1px rgba(0, 0, 0, 0.2);
 }
-.dd_top_element .dd_snippet > .dd_tools {
+.dd_top_element [data-dd='snippet'] > .dd_tools {
   position: absolute;
   top: 5px;
   left: 5px;
 }
-.dd_top_element .dd_snippet > .dd_tools .dd_tool {
+.dd_top_element [data-dd='snippet'] > .dd_tools .dd_tool {
   float: left;
   font-size: 20px;
   text-align: center;
@@ -194,13 +194,13 @@ body {
   cursor: pointer;
   clear: both;
 }
-.dd_top_element .dd_snippet > .dd_tools .snippet_mover {
+.dd_top_element [data-dd='snippet'] > .dd_tools .snippet_mover {
   cursor: move;
 }
-.dd_top_element .dd_snippet > .dd_tools .snippet_destroyer {
+.dd_top_element [data-dd='snippet'] > .dd_tools .snippet_destroyer {
   cursor: pointer;
 }
-.dd_top_element .dd_snippet .dd_snippet_settings {
+.dd_top_element [data-dd='snippet'] .dd_snippet_settings {
   position: absolute;
   height: 30px;
   width: 100%;
@@ -210,14 +210,14 @@ body {
   top: 0;
   left: 0;
 }
-.dd_top_element .dd_snippet .dd_snippet_settings .dd_background_manager {
+.dd_top_element [data-dd='snippet'] .dd_snippet_settings .dd_background_manager {
   position: absolute;
   top: 50%;
   margin-top: -18px;
   text-align: center;
   width: 100%;
 }
-.dd_top_element .dd_snippet .dd_snippet_settings .dd_background_manager > span {
+.dd_top_element [data-dd='snippet'] .dd_snippet_settings .dd_background_manager > span {
   background: #ddd;
   color: #333;
   display: inline-block;
@@ -228,29 +228,29 @@ body {
   margin: 4px 2px 0 2px;
   cursor: pointer;
 }
-.dd_top_element .dd_snippet .dd_snippet_settings .dd_background_manager .dd_image_background {
+.dd_top_element [data-dd='snippet'] .dd_snippet_settings .dd_background_manager .dd_image_background {
   margin-top: -10px;
   position: relative;
   top: -12px;
 }
-.dd_top_element .dd_snippet .dd_snippet_settings .dd_background_manager .dd_snippet_padding {
+.dd_top_element [data-dd='snippet'] .dd_snippet_settings .dd_background_manager .dd_snippet_padding {
   position: relative;
   display: inline-block;
   width: 150px;
 }
-.dd_top_element .dd_snippet .dd_image_wrapper,
-.dd_top_element .dd_snippet .dd_video {
+.dd_top_element [data-dd='snippet'] .dd_image_wrapper,
+.dd_top_element [data-dd='snippet'] [data-dd='video'] {
   position: relative;
 }
-.dd_top_element .dd_snippet .dd_image_wrapper .dd_tools,
-.dd_top_element .dd_snippet .dd_video .dd_tools {
+.dd_top_element [data-dd='snippet'] .dd_image_wrapper .dd_tools,
+.dd_top_element [data-dd='snippet'] [data-dd='video'] .dd_tools {
   position: absolute;
   text-align: center;
 }
-.dd_top_element .dd_snippet .dd_image_wrapper .dd_tools .image_upload,
-.dd_top_element .dd_snippet .dd_video .dd_tools .image_upload,
-.dd_top_element .dd_snippet .dd_image_wrapper .dd_tools .video_action,
-.dd_top_element .dd_snippet .dd_video .dd_tools .video_action {
+.dd_top_element [data-dd='snippet'] .dd_image_wrapper .dd_tools .image_upload,
+.dd_top_element [data-dd='snippet'] [data-dd='video'] .dd_tools .image_upload,
+.dd_top_element [data-dd='snippet'] .dd_image_wrapper .dd_tools .video_action,
+.dd_top_element [data-dd='snippet'] [data-dd='video'] .dd_tools .video_action {
   background: #fff;
   width: 50px;
   height: 50px;
@@ -261,8 +261,8 @@ body {
   margin: 5px;
   cursor: pointer;
 }
-.dd_top_element .dd_snippet .dd_image_wrapper .dd_tools .image_link,
-.dd_top_element .dd_snippet .dd_video .dd_tools .image_link {
+.dd_top_element [data-dd='snippet'] .dd_image_wrapper .dd_tools .image_link,
+.dd_top_element [data-dd='snippet'] [data-dd='video'] .dd_tools .image_link {
   background: #fff;
   width: 40px;
   height: 40px;
@@ -273,10 +273,10 @@ body {
   margin: 5px;
   cursor: pointer;
 }
-.dd_top_element .dd_snippet .dd_video .dd_tools {
+.dd_top_element [data-dd='snippet'] [data-dd='video'] .dd_tools {
   width: 500px;
 }
-.dd_top_element .dd_snippet .dd_video .dd_tools textarea.video_code_textarea {
+.dd_top_element [data-dd='snippet'] [data-dd='video'] .dd_tools textarea.video_code_textarea {
   width: 500px;
   height: 100px;
   border: none;

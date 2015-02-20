@@ -19,7 +19,7 @@ class DapperDoe.SnippetPreview
 
   # Build a snippet preview DOM
   buildSnippet: () ->
-    this.$el = $("<div class='dd_snippet'></div>")
+    this.$el = $("<div data-dd='snippet'></div>")
     this.$el.attr('id', "dd_snippet#{@index}")
     this.$el.append($("<img src='#{@snippet.previewUrl}' />"))
 
@@ -158,9 +158,9 @@ class DapperDoe.Snippet
 
   # Makes snippet's content editable by creating new content objects
   parseSnippet: ->
-    this.$el.find('.dd_text').each ->  new DapperDoe.Content.Text({el: $(this)})
+    this.$el.find('[data-dd="text"]').each ->  new DapperDoe.Content.Text({el: $(this)})
     this.$el.find('img').each -> new DapperDoe.Content.Image({el: $(this)})
-    this.$el.find('.dd_video').each -> new DapperDoe.Content.Video({el: $(this)})
+    this.$el.find('[data-dd="video"]').each -> new DapperDoe.Content.Video({el: $(this)})
 
   destroy: ->
     if confirm("Are you sure you want to destroy this snippet?")
@@ -175,7 +175,7 @@ class DapperDoe.AppView
     this.$el.addClass('dd_top_element')
     this.addTools()
     this.$el.sortable
-      items: ".dd_snippet"
+      items: "[data-dd='snippet']"
       forcePlaceholderSize: true
       axis: 'y'
       receive: this.addSnippet
@@ -199,7 +199,7 @@ class DapperDoe.AppView
     $('body').append("<div class='dd_loader'><i class='fa fa-circle-o-notch fa-spin'></i></div>")
 
   parsePage: ->
-    this.$el.find('.dd_snippet').each (index, snippet) ->
+    this.$el.find('*[data-dd="snippet"]').each (index, snippet) ->
       new DapperDoe.Snippet({el: $(snippet)})
 
   # Prepares the html for saving and calls the callback
@@ -212,7 +212,7 @@ class DapperDoe.AppView
     $(html).find('.dd_image_wrapper').each ->
       $(this).find('img').appendTo($(this).parent())
       $(this).remove()
-    $(html).find('.dd_text .dd_text_content').each ->
+    $(html).find('[data-dd="text"] .dd_text_content').each ->
       $(this).parent().html($(this).html())
     return html.html().replace(/<script>/gi,'').replace(/<\/script>/gi,'')
 

@@ -161,6 +161,7 @@ class DapperDoe.Snippet
     this.$el.find('[data-dd="text"]').each ->  new DapperDoe.Content.Text({el: $(this)})
     this.$el.find('img').each -> new DapperDoe.Content.Image({el: $(this)})
     this.$el.find('[data-dd="video"]').each -> new DapperDoe.Content.Video({el: $(this)})
+    this.$el.find(".#{iconset[window.app.iconSet].iconClass}").each -> new DapperDoe.Content.Icon({el: $(this)})
 
   destroy: ->
     if confirm("Are you sure you want to destroy this snippet?")

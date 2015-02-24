@@ -26,6 +26,7 @@ class DapperDoe.App
         'eeeeee'
         'ffffff'
       ]
+      iconSet: ''
 
       #By defaut, image callback just log
       saveImageCallback: (formdata, callback) ->
@@ -42,6 +43,7 @@ class DapperDoe.App
     this.saveImageCallback = settings.saveImageCallback
     this.topElement = settings.topElement
     this.snippetsContainer = settings.snippetsContainer
+    this.iconSet = settings.iconSet
 
     # We create a template based on the given snippetsPath
     this.template = new DapperDoe.Template

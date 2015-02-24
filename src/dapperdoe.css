@@ -1,4 +1,4 @@
-/*! Dapper Doe - v0.2.0 - 2015-02-20
+/*! Dapper Doe - v0.2.0 - 2015-02-24
 * https://github.com/pascalmerme/dapperdoe
 * Copyright (c) 2015 Pascal Merme; Licensed MIT */
 body {
@@ -286,4 +286,27 @@ body {
   font-family: Monaco, Consolas, "Courier New", Courier;
   color: #888;
   resize: none;
+}
+#icon-picker {
+  position: fixed;
+  top: 50%;
+  left: 0;
+  width: 100%;
+  text-align: center;
+}
+#icon-picker .dd-iconpicker-wrapper {
+  display: inline-block;
+  background: #333;
+  padding: 5px;
+  border-radius: 3px;
+}
+#icon-picker .dd-iconpicker-wrapper i {
+  margin: 5px;
+  color: #fff;
+  height: 40px;
+  line-height: 40px;
+  width: 40px;
+  text-align: center;
+  font-size: 28px;
+  cursor: pointer;
 }

@@ -69,6 +69,12 @@ class DapperDoe.Content.Video extends DapperDoe.Content
 		super(options)
 		this.tools = new DapperDoe.Tools.Video({el: this.$el})
 
+# Icon content
+class DapperDoe.Content.Icon extends DapperDoe.Content
+	constructor: (options) ->
+		super(options)
+		this.tools = new DapperDoe.Tools.Icon({icon: this.$el})
+
 # UI for editing images
 class DapperDoe.Tools.Image extends DapperDoe.Tools
 	constructor: (options) ->
@@ -178,12 +184,51 @@ class DapperDoe.Tools.Video extends DapperDoe.Tools
 			<i class='video_action fa fa-code'></i><br/>
 		</span>"
 
+# UI for editing icons
+class DapperDoe.Tools.Icon extends DapperDoe.Tools
+	constructor: (options) ->
+		this.$icon = options.icon
+		this.$el = $('#icon-picker')
+		this.$el = this.html()
+		$(window.app.topElement).append(this.$el)
+		this.$el.hide()
+		this.events()
+		this.$icon.css('cursor', 'pointer')
+			
+
+	events: ->
+		this.$icon.bind('click', => this.show())
+		this.$el.find('i').bind('click', (e) => this.doAction(e))
+
+	doAction: (e) ->
+		this.$icon.attr('class', '') 
+		this.$icon.addClass("#{$(e.target).data('iconset')} #{$(e.target).data('icon')}")
+		this.hide()
+
+	show: () ->
+		this.$el.show()
+		this.$el.css('marginTop', -(this.$el.height()/2))
+
+	hide: ->
+		this.$el.hide()
+
+	html: ->
+		$ui = $("<span class='dd_tools dd_ui' id='icon-picker'><div class='dd-iconpicker-wrapper'></div></span>")
+		i = 0
+		for icon in iconset[window.app.iconSet].icons
+			iconClassName = iconset[window.app.iconSet].iconClassFix + icon
+			iconsetClassName = iconset[window.app.iconSet].iconClass
+			$ui.find('.dd-iconpicker-wrapper').append("<i data-iconset='#{iconsetClassName}' data-icon='#{iconClassName}' class='#{iconsetClassName} #{iconClassName}'></i>")
+			$ui.find('.dd-iconpicker-wrapper').append("<br/>") if i%20 == 19
+			i++
+		$ui
+
 # UI for editing texts
 class DapperDoe.Toolbar.Text extends DapperDoe.Toolbar
 
 	constructor: (options) ->
 		super(options)
-		this.$el.html(this.html)
+		this.$el.html(this.html())
 		$(window.app.topElement).append(this.$el)
 		this.toolbarWidth = this.$el.find('.dd_toolbar').width()
 		this.toolbarHeight = this.$el.find('.dd_toolbar').height()

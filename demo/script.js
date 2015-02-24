@@ -19,6 +19,7 @@ $(document).ready(function() {
 				}
 			}
 		},
+		iconSet: 'glyphicon'
 		// saveImageCallback: function(formdata, callback) {
 		// 	$.ajax("/static_images.json",{
 		// 		type: 'POST',

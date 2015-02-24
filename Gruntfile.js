@@ -17,7 +17,7 @@ module.exports = function(grunt) {
     coffee: {
       compile: {
         files: {
-          'src/dapperdoe.js': ['app/js/main.coffee', 'app/js/template.coffee', 'app/js/snippet.coffee', 'app/js/content.coffee', 'app/js/app.coffee'] // compile and concat into single file
+          'src/dapperdoe_core.js': ['app/js/main.coffee', 'app/js/template.coffee', 'app/js/snippet.coffee', 'app/js/content.coffee', 'app/js/app.coffee'] // compile and concat into single file
         }
       }
     },
@@ -27,7 +27,7 @@ module.exports = function(grunt) {
         stripBanners: true
       },
       dist: {
-        src: ['src/dapperdoe.js', 'libs/rangy/*.js'],
+        src: ['src/dapperdoe_core.js', 'libs/rangy/*.js', 'app/js/iconsets/*.js'],
         dest: 'src/<%= pkg.name %>.js'
       },
     },

@@ -72,6 +72,10 @@ You can add videos in your template by adding the following markup :
     </div>
     
 As you can see, you just need to add a `data-dd="video"` attribute to a div wrapping the video iframe. It has been tested with Youtube, Vimeo and Dailymotion embed iframes.
+
+#####Icons
+
+You can enable an icon editor. If you do so, each tag having your iconset class will be editable. Icon edition is configurable in the script (see below).
 	
 ####Run DapperDoe
 
@@ -97,6 +101,18 @@ In order to get the html that has been generated with the editor, just run `wind
 ## Options
 
 You can customize DapperDoe UI with some options :
+
+####Iconset
+
+In order to enable icon edition, just tell Dapper Doe the iconset you're using in the script options:
+	
+	window.app = new DapperDoe.App({
+		...,
+		iconSet: 'glyphicon,
+        ...
+	});
+	
+Currently, two icon sets are supported : `glyphicon` and `fontawesome`.
 
 ####Snippets Container
 
